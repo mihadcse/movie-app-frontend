@@ -36,6 +36,9 @@ class MovieApiService {
         final jsonData = json.decode(response.body);
         print('✅ Successfully fetched ${jsonData['content']?.length ?? 0} movies from API');
         return MoviePageResponse.fromJson(jsonData);
+      } else if (response.statusCode == 500) {
+        print('❌ API Error: ${response.statusCode} - Server Error');
+        throw ApiException('Server is experiencing issues. Please try again later.', response.statusCode);
       } else {
         print('❌ API Error: ${response.statusCode} - ${response.body}');
         throw ApiException('Failed to load movies: ${response.statusCode}', response.statusCode);
@@ -64,6 +67,43 @@ class MovieApiService {
       }
     } catch (e) {
       throw Exception('Error fetching movie: $e');
+    }
+  }
+
+  // Search movies by title
+  static Future<List<Movie>> searchMoviesByTitle(String keywords) async {
+    try {
+      if (keywords.trim().isEmpty) {
+        return [];
+      }
+
+      final uri = Uri.parse('$baseUrl/search/${Uri.encodeComponent(keywords)}');
+      
+      print('🔍 Searching movies with keywords: $keywords');
+      print('🔗 Search API request to: $uri');
+
+      final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ).timeout(const Duration(seconds: 10));
+
+      print('📡 Search API Response Status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = json.decode(response.body);
+        final List<Movie> movies = jsonData.map((movieJson) => Movie.fromJson(movieJson)).toList();
+        print('✅ Successfully found ${movies.length} movies matching "$keywords"');
+        return movies;
+      } else {
+        print('❌ Search API Error: ${response.statusCode} - ${response.body}');
+        throw ApiException('Failed to search movies: ${response.statusCode}', response.statusCode);
+      }
+    } catch (e) {
+      print('🚨 Search API Exception: $e');
+      throw Exception('Error searching movies: $e');
     }
   }
 
