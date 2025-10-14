@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
 import '../models/movie.dart';
 import '../theme/app_theme.dart';
 
@@ -39,6 +40,88 @@ class _ProfilePageState extends State<ProfilePage> {
       image: 'https://images.unsplash.com/photo-1627964464837-6328f5931576?w=400',
     ),
   ];
+
+  void _logout() async {
+    // Show confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          backgroundColor: AppTheme.card,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: AppTheme.mutedForeground),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.destructive,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true && mounted) {
+      // Clear user session/data here
+      // You can add shared preferences clearing, auth token removal, etc.
+      
+      // Show loading indicator briefly
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              ),
+              SizedBox(width: 12),
+              Text('Logging out...'),
+            ],
+          ),
+          backgroundColor: AppTheme.primary,
+          duration: Duration(milliseconds: 1500),
+        ),
+      );
+
+      // Wait a moment for user feedback
+      await Future.delayed(const Duration(milliseconds: 1500));
+
+      if (mounted) {
+        // Navigate to login page and clear navigation stack
+        context.go('/login');
+        
+        // Show success message
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Successfully logged out'),
+                backgroundColor: AppTheme.secondary,
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -311,7 +394,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
         // Logout Button
         ElevatedButton(
-          onPressed: () {},
+          onPressed: _logout,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppTheme.destructive.withOpacity(0.1),
             foregroundColor: AppTheme.destructive,
