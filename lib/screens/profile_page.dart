@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/movie.dart';
 import '../theme/app_theme.dart';
+import '../services/api_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,6 +15,12 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   bool _isDarkMode = true;
+  bool _isLoading = true;
+  
+  // User data
+  String _userName = 'John Doe';
+  String _userEmail = 'john.doe@email.com';
+  String _userInitials = 'JD';
 
   final List<Map<String, dynamic>> _userStats = [
     {'label': 'Movies Watched', 'value': '127'},
@@ -40,6 +48,60 @@ class _ProfilePageState extends State<ProfilePage> {
       image: 'https://images.unsplash.com/photo-1627964464837-6328f5931576?w=400',
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    setState(() => _isLoading = true);
+    
+    try {
+      // Get the stored token
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('jwt_token');
+      
+      if (token == null || token.isEmpty) {
+        // No token found, redirect to login
+        if (mounted) {
+          context.go('/login');
+        }
+        return;
+      }
+
+      // Fetch user profile data from your API
+      final userData = await ApiService.getUserProfile(token);
+      
+      if (mounted) {
+        setState(() {
+          _userName = userData['name'] ?? 'User';
+          _userEmail = userData['email'] ?? '';
+          _userInitials = _getInitials(_userName);
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading user data: $e');
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load profile: $e'),
+            backgroundColor: AppTheme.destructive,
+          ),
+        );
+      }
+    }
+  }
+
+  String _getInitials(String name) {
+    final parts = name.trim().split(' ');
+    if (parts.isEmpty) return 'U';
+    if (parts.length == 1) return parts[0][0].toUpperCase();
+    return '${parts[0][0]}${parts[parts.length - 1][0]}'.toUpperCase();
+  }
 
   void _logout() async {
     // Show confirmation dialog
@@ -75,8 +137,9 @@ class _ProfilePageState extends State<ProfilePage> {
     );
 
     if (confirmed == true && mounted) {
-      // Clear user session/data here
-      // You can add shared preferences clearing, auth token removal, etc.
+      // Clear user session/data
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('jwt_token');
       
       // Show loading indicator briefly
       ScaffoldMessenger.of(context).showSnackBar(
@@ -125,6 +188,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -142,10 +211,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     borderRadius: BorderRadius.circular(40),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      'JD',
-                      style: TextStyle(
+                      _userInitials,
+                      style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w500,
                       ),
@@ -175,21 +244,21 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
             const SizedBox(width: 16),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'John Doe',
-                    style: TextStyle(
+                    _userName,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
-                    'john.doe@email.com',
-                    style: TextStyle(
+                    _userEmail,
+                    style: const TextStyle(
                       color: AppTheme.mutedForeground,
                     ),
                   ),
