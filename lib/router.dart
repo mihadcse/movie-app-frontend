@@ -8,6 +8,7 @@ import 'screens/watchlist_page.dart';
 import 'screens/profile_page.dart';
 import 'screens/movie_details.dart';
 import 'screens/mood_discovery_page.dart';
+import 'screens/chat_page.dart';
 import 'models/movie.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -29,6 +30,13 @@ class AppRouter {
         path: '/register',
         name: 'register',
         builder: (context, state) => const RegisterPage(),
+      ),
+
+      // Chat Route
+      GoRoute(
+        path: '/chat',
+        name: 'chat',
+        builder: (context, state) => ChatPage(),
       ),
 
       // Main App Shell with Bottom Navigation
