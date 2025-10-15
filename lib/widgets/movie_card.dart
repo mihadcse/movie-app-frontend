@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
 import '../models/movie.dart';
 import '../theme/app_theme.dart';
+import '../providers/theme_provider.dart'; // Import the new theme provider
 
-class MovieCard extends StatelessWidget {
+class MovieCard extends ConsumerWidget { // Change to ConsumerWidget
   final Movie movie;
   final VoidCallback? onTap;
   final double width;
@@ -16,10 +18,13 @@ class MovieCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) { // Add WidgetRef ref
+    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
+    final isDarkMode = themeModeType == ThemeModeType.dark;
+
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: SizedBox(
         width: width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,9 +39,9 @@ class MovieCard extends StatelessWidget {
                     height: width * 1.5,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
-                      color: AppTheme.muted,
-                      child: const Center(
-                        child: CircularProgressIndicator(),
+                      color: Theme.of(context).colorScheme.surfaceVariant, // Use theme-specific muted color
+                      child: Center(
+                        child: CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurfaceVariant),
                       ),
                     ),
                   ),
@@ -56,9 +61,9 @@ class MovieCard extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.star,
-                          color: AppTheme.secondary,
+                          color: Theme.of(context).colorScheme.secondary,
                           size: 12,
                         ),
                         const SizedBox(width: 4),
@@ -85,9 +90,9 @@ class MovieCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 movie.genre!,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
-                  color: AppTheme.mutedForeground,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant, // Use theme-specific mutedForeground color
                 ),
               ),
             ],

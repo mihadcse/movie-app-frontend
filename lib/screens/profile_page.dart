@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/movie.dart';
 import '../theme/app_theme.dart';
 import '../providers/auth_provider.dart';
+import '../providers/theme_provider.dart'; // Import the new theme provider
 
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
@@ -14,7 +15,7 @@ class ProfilePage extends ConsumerStatefulWidget {
 }
 
 class _ProfilePageState extends ConsumerState<ProfilePage> {
-  bool _isDarkMode = true;
+  // Removed _isDarkMode local state, now managed by ThemeProvider
 
   final List<Map<String, dynamic>> _userStats = [
     {'label': 'Movies Watched', 'value': '127'},
@@ -54,26 +55,28 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
+        final currentThemeMode = ref.read(themeProvider);
+        final isDarkMode = currentThemeMode == ThemeModeType.dark;
         return AlertDialog(
           title: const Text('Logout'),
           content: const Text('Are you sure you want to logout?'),
-          backgroundColor: AppTheme.card,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text(
+              child: Text(
                 'Cancel',
-                style: TextStyle(color: AppTheme.mutedForeground),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(true),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.destructive,
-                foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.error,
+                foregroundColor: Theme.of(context).colorScheme.onError,
               ),
               child: const Text('Logout'),
             ),
@@ -85,7 +88,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     if (confirmed == true && mounted) {
       // Show loading indicator briefly
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Row(
             children: [
               SizedBox(
@@ -93,15 +96,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 height: 16,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.onPrimary),
                 ),
               ),
-              SizedBox(width: 12),
-              Text('Logging out...'),
+              const SizedBox(width: 12),
+              const Text('Logging out...'),
             ],
           ),
-          backgroundColor: AppTheme.primary,
-          duration: Duration(milliseconds: 1500),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          duration: const Duration(milliseconds: 1500),
         ),
       );
 
@@ -116,10 +119,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Successfully logged out'),
-                backgroundColor: AppTheme.secondary,
-                duration: Duration(seconds: 2),
+              SnackBar(
+                content: const Text('Successfully logged out'),
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                duration: const Duration(seconds: 2),
               ),
             );
           }
@@ -133,6 +136,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     final authState = ref.watch(authProvider);
     final user = authState.user;
     final isLoading = authState.isLoading;
+    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
+    final isDarkMode = themeModeType == ThemeModeType.dark;
 
     if (isLoading) {
       return const Center(
@@ -160,17 +165,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [AppTheme.primary, AppTheme.secondary],
+                    gradient: LinearGradient(
+                      colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
                     ),
                     borderRadius: BorderRadius.circular(40),
                   ),
                   child: Center(
                     child: Text(
                       user.initials,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w500,
+                        color: Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
                   ),
@@ -181,17 +187,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: AppTheme.primary,
+                      color: Theme.of(context).colorScheme.primary,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: AppTheme.background,
+                        color: Theme.of(context).colorScheme.background,
                         width: 2,
                       ),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.edit,
                       size: 12,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onPrimary,
                     ),
                   ),
                 ),
@@ -212,8 +218,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   const SizedBox(height: 4),
                   Text(
                     user.email,
-                    style: const TextStyle(
-                      color: AppTheme.mutedForeground,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -233,24 +239,24 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   child: Column(
                     children: [
                       ShaderMask(
-                        shaderCallback: (bounds) => const LinearGradient(
-                          colors: [AppTheme.primary, AppTheme.secondary],
+                        shaderCallback: (bounds) => LinearGradient(
+                          colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
                         ).createShader(bounds),
                         child: Text(
                           stat['value'],
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w500,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onPrimary,
                           ),
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         stat['label'],
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: AppTheme.mutedForeground,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -267,12 +273,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'My Recent Ratings',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             TextButton(
               onPressed: () {},
@@ -304,7 +307,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                             height: 150,
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Container(
-                              color: AppTheme.muted,
+                              color: Theme.of(context).colorScheme.surfaceVariant,
                             ),
                           ),
                         ),
@@ -323,9 +326,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.star,
-                                  color: AppTheme.secondary,
+                                  color: Theme.of(context).colorScheme.secondary,
                                   size: 12,
                                 ),
                                 const SizedBox(width: 2),
@@ -342,7 +345,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     const SizedBox(height: 8),
                     Text(
                       movie.title,
-                      style: const TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -387,27 +390,28 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: AppTheme.primary.withOpacity(0.1),
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(
-                        _isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                        color: AppTheme.primary,
+                        isDarkMode ? Icons.dark_mode : Icons.light_mode, // Use isDarkMode from provider
+                        color: Theme.of(context).colorScheme.primary,
                         size: 20,
                       ),
                     ),
                     const SizedBox(width: 12),
-                    const Text('Dark Mode'),
+                    Text(
+                      'Dark Mode',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                   ],
                 ),
                 Switch(
-                  value: _isDarkMode,
+                  value: isDarkMode, // Use isDarkMode from provider
                   onChanged: (value) {
-                    setState(() {
-                      _isDarkMode = value;
-                    });
+                    ref.read(themeProvider.notifier).toggleTheme(); // Toggle theme using provider
                   },
-                  activeColor: AppTheme.primary,
+                  activeColor: Theme.of(context).colorScheme.primary,
                 ),
               ],
             ),
@@ -419,16 +423,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         ElevatedButton(
           onPressed: _logout,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.destructive.withOpacity(0.1),
-            foregroundColor: AppTheme.destructive,
+            backgroundColor: Theme.of(context).colorScheme.error.withOpacity(0.1),
+            foregroundColor: Theme.of(context).colorScheme.error,
             padding: const EdgeInsets.symmetric(vertical: 16),
           ),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.logout),
-              SizedBox(width: 8),
-              Text('Logout'),
+              Icon(Icons.logout, color: Theme.of(context).colorScheme.error),
+              const SizedBox(width: 8),
+              Text(
+                'Logout',
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
             ],
           ),
         ),
@@ -442,6 +449,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     String? trailing,
     required VoidCallback onTap,
   }) {
+    final currentThemeMode = ref.read(themeProvider);
+    final isDarkMode = currentThemeMode == ThemeModeType.dark;
     return Card(
       child: InkWell(
         onTap: onTap,
@@ -453,31 +462,34 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppTheme.primary.withOpacity(0.1),
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   icon,
-                  color: AppTheme.primary,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 20,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(label),
+                child: Text(
+                  label,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               ),
               if (trailing != null) ...[
                 Text(
                   trailing,
-                  style: const TextStyle(
-                    color: AppTheme.mutedForeground,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(width: 8),
               ],
-              const Icon(
+              Icon(
                 Icons.chevron_right,
-                color: AppTheme.mutedForeground,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ],
           ),

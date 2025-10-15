@@ -3,6 +3,7 @@ import '../theme/app_theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
+import '../providers/theme_provider.dart'; // Import the new theme provider
 
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -37,9 +38,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     if (_formKey.currentState!.validate()) {
       if (!_acceptTerms) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please accept the terms and conditions'),
-            backgroundColor: AppTheme.destructive,
+          SnackBar(
+            content: const Text('Please accept the terms and conditions'),
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
         return;
@@ -58,9 +59,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         if (!mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Account created successfully! Please login.'),
-            backgroundColor: AppTheme.primary,
+          SnackBar(
+            content: const Text('Account created successfully! Please login.'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
 
@@ -69,7 +70,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Registration failed: $e'),
-            backgroundColor: AppTheme.destructive,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       } finally {
@@ -85,6 +86,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
+    final isDarkMode = themeModeType == ThemeModeType.dark;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -101,7 +105,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     onPressed: () => Navigator.pop(context),
                     icon: const Icon(Icons.arrow_back),
                     style: IconButton.styleFrom(
-                      backgroundColor: AppTheme.card,
+                      backgroundColor: Theme.of(context).colorScheme.surface, // Use theme-specific card color
                       padding: const EdgeInsets.all(12),
                     ),
                   ),
@@ -110,8 +114,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     width: 60,
                     height: 60,
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [AppTheme.primary, AppTheme.secondary],
+                      gradient: LinearGradient(
+                        colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -134,14 +138,14 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               Column(
                 children: [
                   ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [AppTheme.primary, AppTheme.secondary],
+                    shaderCallback: (bounds) => LinearGradient(
+                      colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
                     ).createShader(bounds),
                     child: Text(
                       'Join CineMatch',
                       style: Theme.of(context).textTheme.displayMedium
                           ?.copyWith(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onPrimary,
                             fontWeight: FontWeight.w600,
                           ),
                     ),
@@ -159,6 +163,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
               // Registration Form
               Card(
+                color: Theme.of(context).colorScheme.surface, // Use theme-specific card color
                 child: Padding(
                   padding: const EdgeInsets.all(24),
                   child: Form(
@@ -177,10 +182,11 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         TextFormField(
                           controller: _nameController,
                           textCapitalization: TextCapitalization.words,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: 'Full Name',
                             hintText: 'Enter your full name',
-                            prefixIcon: Icon(Icons.person_outlined),
+                            prefixIcon: const Icon(Icons.person_outlined),
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant, // Use theme-specific muted color
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -199,10 +205,11 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           autocorrect: false,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: 'Email',
                             hintText: 'Enter your email address',
-                            prefixIcon: Icon(Icons.email_outlined),
+                            prefixIcon: const Icon(Icons.email_outlined),
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant, // Use theme-specific muted color
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -238,6 +245,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 });
                               },
                             ),
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant, // Use theme-specific muted color
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -277,6 +285,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 });
                               },
                             ),
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant, // Use theme-specific muted color
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -296,11 +305,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           maxLines: 3,
                           maxLength: 200,
                           textCapitalization: TextCapitalization.sentences,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: 'About You (Optional)',
                             hintText: 'Tell us about your movie preferences...',
-                            prefixIcon: Icon(Icons.info_outlined),
+                            prefixIcon: const Icon(Icons.info_outlined),
                             alignLabelWithHint: true,
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant, // Use theme-specific muted color
                           ),
                           validator: (value) {
                             if (value != null && value.length > 200) {
@@ -322,7 +332,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                   _acceptTerms = value ?? false;
                                 });
                               },
-                              activeColor: AppTheme.primary,
+                              activeColor: Theme.of(context).colorScheme.primary,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4),
                               ),
@@ -340,7 +350,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                       TextSpan(
                                         text: 'Terms of Service',
                                         style: TextStyle(
-                                          color: AppTheme.primary,
+                                          color: Theme.of(context).colorScheme.primary,
                                           decoration: TextDecoration.underline,
                                         ),
                                       ),
@@ -348,7 +358,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                       TextSpan(
                                         text: 'Privacy Policy',
                                         style: TextStyle(
-                                          color: AppTheme.primary,
+                                          color: Theme.of(context).colorScheme.primary,
                                           decoration: TextDecoration.underline,
                                         ),
                                       ),
@@ -397,7 +407,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               // Divider
               Row(
                 children: [
-                  const Expanded(child: Divider(color: AppTheme.muted)),
+                  Expanded(child: Divider(color: Theme.of(context).colorScheme.outlineVariant)), // Use theme-specific muted color
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
@@ -405,7 +415,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
-                  const Expanded(child: Divider(color: AppTheme.muted)),
+                  Expanded(child: Divider(color: Theme.of(context).colorScheme.outlineVariant)), // Use theme-specific muted color
                 ],
               ),
 
@@ -413,6 +423,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
               // Social Registration Options
               Card(
+                color: Theme.of(context).colorScheme.surface, // Use theme-specific card color
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -426,7 +437,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         label: const Text('Sign up with Google'),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
-                          side: const BorderSide(color: AppTheme.muted),
+                          side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant), // Use theme-specific muted color
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -440,7 +451,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         label: const Text('Sign up with Apple'),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
-                          side: const BorderSide(color: AppTheme.muted),
+                          side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant), // Use theme-specific muted color
                         ),
                       ),
                     ],
@@ -460,10 +471,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   ),
                   TextButton(
                     onPressed: _navigateToLogin,
-                    child: const Text(
+                    child: Text(
                       'Sign In',
                       style: TextStyle(
-                        color: AppTheme.primary,
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

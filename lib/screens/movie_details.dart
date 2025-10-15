@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
 import '../models/movie.dart';
 import '../theme/app_theme.dart';
+import '../providers/theme_provider.dart'; // Import the new theme provider
 
-class MovieDetailsPage extends StatelessWidget {
+class MovieDetailsPage extends ConsumerWidget { // Change to ConsumerWidget
   final Movie movie;
 
   const MovieDetailsPage({super.key, required this.movie});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) { // Add WidgetRef ref
+    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
+    final isDarkMode = themeModeType == ThemeModeType.dark;
+
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -30,8 +35,8 @@ class MovieDetailsPage extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          AppTheme.background.withOpacity(0.6),
-                          AppTheme.background,
+                          Theme.of(context).colorScheme.background.withOpacity(0.6), // Use theme-specific background color
+                          Theme.of(context).colorScheme.background, // Use theme-specific background color
                         ],
                       ),
                     ),
@@ -65,15 +70,15 @@ class MovieDetailsPage extends StatelessWidget {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: AppTheme.secondary.withOpacity(0.2),
+                          color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(24),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.star,
-                              color: AppTheme.secondary,
+                              color: Theme.of(context).colorScheme.secondary,
                               size: 16,
                             ),
                             const SizedBox(width: 4),
@@ -82,29 +87,29 @@ class MovieDetailsPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      const Icon(
+                      Icon(
                         Icons.calendar_today,
                         size: 16,
-                        color: AppTheme.mutedForeground,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant, // Use theme-specific mutedForeground color
                       ),
                       const SizedBox(width: 4),
-                      const Text(
+                      Text(
                         '2024',
                         style: TextStyle(
-                          color: AppTheme.mutedForeground,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant, // Use theme-specific mutedForeground color
                         ),
                       ),
                       const SizedBox(width: 12),
-                      const Icon(
+                      Icon(
                         Icons.access_time,
                         size: 16,
-                        color: AppTheme.mutedForeground,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant, // Use theme-specific mutedForeground color
                       ),
                       const SizedBox(width: 4),
-                      const Text(
+                      Text(
                         '2h 15m',
                         style: TextStyle(
-                          color: AppTheme.mutedForeground,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant, // Use theme-specific mutedForeground color
                         ),
                       ),
                     ],
@@ -116,7 +121,8 @@ class MovieDetailsPage extends StatelessWidget {
                         .map(
                           (genre) => Chip(
                             label: Text(genre),
-                            backgroundColor: AppTheme.muted,
+                            backgroundColor: Theme.of(context).colorScheme.surfaceVariant, // Use theme-specific muted color
+                            labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                           ),
                         )
                         .toList(),
@@ -160,10 +166,10 @@ class MovieDetailsPage extends StatelessWidget {
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   const SizedBox(height: 12),
-                  const Text(
+                  Text(
                     'In a world where quantum technology has opened portals to parallel universes, a team of elite explorers must navigate through dangerous dimensions to prevent a catastrophic collapse of reality itself.',
                     style: TextStyle(
-                      color: AppTheme.mutedForeground,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant, // Use theme-specific mutedForeground color
                       height: 1.5,
                     ),
                   ),

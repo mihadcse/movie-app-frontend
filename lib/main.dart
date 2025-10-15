@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'theme/app_theme.dart';
 import 'router.dart';
+import 'providers/theme_provider.dart'; // Import the new theme provider
 
 void main() {
   // Add error handling for Flutter web mouse tracking issues
@@ -26,14 +27,18 @@ void main() {
   );
 }
 
-class CineMatchApp extends StatelessWidget {
+class CineMatchApp extends ConsumerWidget { // Change to ConsumerWidget
   const CineMatchApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) { // Add WidgetRef ref
+    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
+
     return MaterialApp.router(
       title: 'CineMatch',
-      theme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme, // Set light theme as default
+      darkTheme: AppTheme.darkTheme, // Define dark theme
+      themeMode: themeModeType == ThemeModeType.dark ? ThemeMode.dark : ThemeMode.light, // Use themeMode from provider
       routerConfig: AppRouter.router,
       debugShowCheckedModeBanner: false,
     );
