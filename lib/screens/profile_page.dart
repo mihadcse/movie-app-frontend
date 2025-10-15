@@ -365,6 +365,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         ),
         const SizedBox(height: 12),
         _buildMenuItem(
+          icon: Icons.smart_toy_outlined,
+          label: 'Gemini AI Chat',
+          onTap: () {
+            context.go('/chat');
+          },
+        ),
+        const SizedBox(height: 12),
+        _buildMenuItem(
           icon: Icons.star_outline,
           label: 'My Ratings',
           trailing: '32',
