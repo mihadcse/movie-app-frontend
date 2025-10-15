@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'theme/app_theme.dart';
 import 'router.dart';
 
@@ -17,7 +18,12 @@ void main() {
     }
   };
   
-  runApp(const CineMatchApp());
+  runApp(
+    // Wrap the app with ProviderScope for Riverpod
+    const ProviderScope(
+      child: CineMatchApp(),
+    ),
+  );
 }
 
 class CineMatchApp extends StatelessWidget {
