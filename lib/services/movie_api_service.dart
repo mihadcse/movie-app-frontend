@@ -107,8 +107,12 @@ class MovieApiService {
     }
   }
 
-  // Method to generate movie poster URL based on genre
+  // Method to generate movie poster URL
   static String getMoviePosterUrl(Movie movie) {
+    if (movie.posterUrl != null && movie.posterUrl!.isNotEmpty) {
+      return movie.posterUrl!;
+    }
+
     final genre = movie.genre?.toLowerCase() ?? 'drama';
     
     // Using working placeholder images based on genre
