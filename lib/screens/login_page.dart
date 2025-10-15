@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'package:go_router/go_router.dart';
-import '../services/api_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/auth_provider.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -27,17 +26,11 @@ class _LoginPageState extends State<LoginPage> {
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-
       try {
-        final token = await ApiService.loginUser(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
+        await ref.read(authProvider.notifier).login(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
         );
-
-        // Store token locally
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('jwt_token', token);
 
         if (!mounted) return;
 
@@ -56,8 +49,6 @@ class _LoginPageState extends State<LoginPage> {
             backgroundColor: AppTheme.destructive,
           ),
         );
-      } finally {
-        if (mounted) setState(() => _isLoading = false);
       }
     }
   }
@@ -78,6 +69,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+    final isLoading = authState.isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -222,11 +216,11 @@ class _LoginPageState extends State<LoginPage> {
 
                         // Login Button
                         ElevatedButton(
-                          onPressed: _isLoading ? null : _login,
+                          onPressed: isLoading ? null : _login,
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                           ),
-                          child: _isLoading
+                          child: isLoading
                               ? const SizedBox(
                                   height: 20,
                                   width: 20,

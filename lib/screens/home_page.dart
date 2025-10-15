@@ -1,32 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/movie.dart';
 import '../services/movie_api_service.dart';
 import '../widgets/top_app_bar.dart';
 import '../screens/movie_details.dart';
 import '../theme/app_theme.dart';
+import '../providers/movie_provider.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   int _carouselIndex = 0;
-  List<Movie> _movies = [];
-  bool _isLoading = true;
-  String _error = '';
-  int _currentPage = 0;
-  bool _hasMoreData = true;
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _loadMovies();
     _scrollController.addListener(_onScroll);
   }
 
@@ -38,80 +34,18 @@ class _HomePageState extends State<HomePage> {
 
   void _onScroll() {
     if (_scrollController.position.pixels >= 
-        _scrollController.position.maxScrollExtent - 500) { // Increased threshold
-      if (!_isLoading && _hasMoreData) {
-        _loadMoreMovies();
+        _scrollController.position.maxScrollExtent - 500) {
+      final movieNotifier = ref.read(movieProvider.notifier);
+      final movieState = ref.read(movieProvider);
+      
+      if (!movieState.isLoading && movieState.hasMoreData) {
+        movieNotifier.loadMoreMovies();
       }
     }
   }
 
-  Future<void> _loadMovies() async {
-    try {
-      setState(() {
-        _isLoading = true;
-        _error = '';
-      });
-
-      final moviePageResponse = await MovieApiService.getAllMovies(
-        pageNumber: 0,
-        pageSize: 20,
-        sortBy: 'title',
-        sortDir: 'ASC',
-      );
-
-      setState(() {
-        _movies = moviePageResponse.content;
-        _currentPage = 0;
-        _hasMoreData = !moviePageResponse.isLast;
-        _isLoading = false;
-      });
-
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _loadMoreMovies() async {
-    if (_isLoading) return; // Prevent multiple concurrent requests
-    
-    try {
-      setState(() {
-        _isLoading = true;
-      });
-      
-      final nextPage = _currentPage + 1;
-      final moviePageResponse = await MovieApiService.getAllMovies(
-        pageNumber: nextPage,
-        pageSize: 20,
-        sortBy: 'title',
-        sortDir: 'ASC',
-      );
-
-      setState(() {
-        _movies.addAll(moviePageResponse.content);
-        _currentPage = nextPage;
-        _hasMoreData = !moviePageResponse.isLast;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error loading more movies: $e'),
-          backgroundColor: AppTheme.destructive,
-        ),
-      );
-    }
-  }
-
   Future<void> _refreshMovies() async {
-    await _loadMovies();
+    await ref.read(movieProvider.notifier).loadMovies(refresh: true);
   }
 
   void _navigateToDetails(Movie movie) {
@@ -124,7 +58,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildFeaturedMoviesCarousel() {
-    final featuredMovies = _movies.take(5).toList();
+    final featuredMovies = ref.watch(featuredMoviesProvider);
     
     if (featuredMovies.isEmpty) return const SizedBox.shrink();
 
@@ -289,6 +223,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildMovieGrid() {
+    final movieState = ref.watch(movieProvider);
+    final movies = movieState.movies;
+    final hasMoreData = movieState.hasMoreData;
+
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -299,9 +237,9 @@ class _HomePageState extends State<HomePage> {
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
       ),
-      itemCount: _movies.length + (_hasMoreData ? 1 : 0),
+      itemCount: movies.length + (hasMoreData ? 1 : 0),
       itemBuilder: (context, index) {
-        if (index >= _movies.length) {
+        if (index >= movies.length) {
           return const Center(
             child: CircularProgressIndicator(
               color: AppTheme.primary,
@@ -309,7 +247,7 @@ class _HomePageState extends State<HomePage> {
           );
         }
 
-        final movie = _movies[index];
+        final movie = movies[index];
         final imageUrl = MovieApiService.getMoviePosterUrl(movie);
 
         return Card(
@@ -420,6 +358,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final movieState = ref.watch(movieProvider);
+    final movies = movieState.movies;
+    final isLoading = movieState.isLoading;
+    final error = movieState.error;
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
@@ -434,7 +377,7 @@ class _HomePageState extends State<HomePage> {
       body: RefreshIndicator(
         onRefresh: _refreshMovies,
         color: AppTheme.primary,
-        child: _isLoading && _movies.isEmpty
+        child: isLoading && movies.isEmpty
             ? const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -448,7 +391,7 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               )
-            : _error.isNotEmpty
+            : error != null
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -465,13 +408,13 @@ class _HomePageState extends State<HomePage> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          _error,
+                          error,
                           style: const TextStyle(color: AppTheme.mutedForeground),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
-                          onPressed: _loadMovies,
+                          onPressed: () => ref.read(movieProvider.notifier).loadMovies(refresh: true),
                           child: const Text('Retry'),
                         ),
                       ],
@@ -504,7 +447,7 @@ class _HomePageState extends State<HomePage> {
                                       Row(
                                         children: [
                                           Text(
-                                            '${_movies.length} movies available',
+                                            '${movies.length} movies available',
                                             style: const TextStyle(
                                               color: AppTheme.mutedForeground,
                                             ),

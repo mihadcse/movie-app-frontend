@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/movie.dart';
 import '../services/movie_api_service.dart';
 import '../theme/app_theme.dart';
+import '../providers/movie_provider.dart';
 
-class SearchPage extends StatefulWidget {
+class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({super.key});
 
   @override
-  State<SearchPage> createState() => _SearchPageState();
+  ConsumerState<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchPageState extends ConsumerState<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   bool _showFilters = false;
   String _selectedGenre = 'all';
-  List<Movie> _searchResults = [];
-  bool _isSearching = false;
-  bool _hasSearched = false;
-  String _error = '';
 
   final List<String> _genres = [
     'All',
@@ -44,41 +42,19 @@ class _SearchPageState extends State<SearchPage> {
       if (_searchController.text.length >= 2) {
         _performSearch(_searchController.text);
       } else if (_searchController.text.isEmpty) {
-        setState(() {
-          _searchResults = [];
-          _hasSearched = false;
-          _error = '';
-        });
+        ref.read(searchProvider.notifier).clearSearch();
       }
     });
   }
 
   Future<void> _performSearch(String keywords) async {
     if (keywords.trim().isEmpty) return;
-
-    setState(() {
-      _isSearching = true;
-      _error = '';
-    });
-
-    try {
-      final results = await MovieApiService.searchMoviesByTitle(keywords);
-      setState(() {
-        _searchResults = results;
-        _hasSearched = true;
-        _isSearching = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isSearching = false;
-        _hasSearched = true;
-      });
-    }
+    await ref.read(searchProvider.notifier).searchMovies(keywords);
   }
 
   List<Movie> get _filteredMovies {
-    List<Movie> movies = _searchResults;
+    final searchState = ref.watch(searchProvider);
+    List<Movie> movies = searchState.searchResults;
     
     // Apply genre filter if not 'all'
     if (_selectedGenre != 'all') {
@@ -92,7 +68,12 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildSearchResults() {
-    if (_isSearching) {
+    final searchState = ref.watch(searchProvider);
+    final isSearching = searchState.isSearching;
+    final hasSearched = searchState.hasSearched;
+    final error = searchState.error;
+
+    if (isSearching) {
       return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -108,7 +89,7 @@ class _SearchPageState extends State<SearchPage> {
       );
     }
 
-    if (_error.isNotEmpty) {
+    if (error != null && error.isNotEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -128,7 +109,7 @@ class _SearchPageState extends State<SearchPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              _error,
+              error,
               style: const TextStyle(color: AppTheme.mutedForeground),
               textAlign: TextAlign.center,
             ),
@@ -142,7 +123,7 @@ class _SearchPageState extends State<SearchPage> {
       );
     }
 
-    if (!_hasSearched) {
+    if (!hasSearched) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -341,6 +322,9 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final searchState = ref.watch(searchProvider);
+    final hasSearched = searchState.hasSearched;
+    
     return Scaffold(
       body: Column(
         children: [
@@ -362,9 +346,7 @@ class _SearchPageState extends State<SearchPage> {
                             onPressed: () {
                               setState(() {
                                 _searchController.clear();
-                                _searchResults = [];
-                                _hasSearched = false;
-                                _error = '';
+                                ref.read(searchProvider.notifier).clearSearch();
                               });
                             },
                           ),
@@ -392,7 +374,7 @@ class _SearchPageState extends State<SearchPage> {
                     }
                   },
                 ),
-                if (_showFilters && _hasSearched && _searchResults.isNotEmpty) ...[
+                if (_showFilters && hasSearched && _filteredMovies.isNotEmpty) ...[
                   const SizedBox(height: 16),
                   Card(
                     child: Padding(

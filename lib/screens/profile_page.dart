@@ -1,26 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/movie.dart';
 import '../theme/app_theme.dart';
-import '../services/api_service.dart';
+import '../providers/auth_provider.dart';
 
-class ProfilePage extends StatefulWidget {
+class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  ConsumerState<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends ConsumerState<ProfilePage> {
   bool _isDarkMode = true;
-  bool _isLoading = true;
-  
-  // User data
-  String _userName = 'John Doe';
-  String _userEmail = 'john.doe@email.com';
-  String _userInitials = 'JD';
 
   final List<Map<String, dynamic>> _userStats = [
     {'label': 'Movies Watched', 'value': '127'},
@@ -52,55 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    _loadUserData();
-  }
-
-  Future<void> _loadUserData() async {
-    setState(() => _isLoading = true);
-    
-    try {
-      // Get the stored token
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('jwt_token');
-      
-      if (token == null || token.isEmpty) {
-        // No token found, redirect to login
-        if (mounted) {
-          context.go('/login');
-        }
-        return;
-      }
-
-      // Fetch user profile data from your API
-      final userData = await ApiService.getUserProfile(token);
-      
-      if (mounted) {
-        setState(() {
-          _userName = userData['name'] ?? 'User';
-          _userEmail = userData['email'] ?? '';
-          _userInitials = _getInitials(_userName);
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      print('Error loading user data: $e');
-      if (mounted) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to load profile: $e'),
-            backgroundColor: AppTheme.destructive,
-          ),
-        );
-      }
-    }
-  }
-
-  String _getInitials(String name) {
-    final parts = name.trim().split(' ');
-    if (parts.isEmpty) return 'U';
-    if (parts.length == 1) return parts[0][0].toUpperCase();
-    return '${parts[0][0]}${parts[parts.length - 1][0]}'.toUpperCase();
+    // Auth state is managed by Riverpod, no need to manually load
   }
 
   void _logout() async {
@@ -137,10 +83,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
 
     if (confirmed == true && mounted) {
-      // Clear user session/data
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('jwt_token');
-      
       // Show loading indicator briefly
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -163,11 +105,11 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       );
 
-      // Wait a moment for user feedback
-      await Future.delayed(const Duration(milliseconds: 1500));
+      // Use Riverpod to logout
+      await ref.read(authProvider.notifier).logout();
 
       if (mounted) {
-        // Navigate to login page and clear navigation stack
+        // Navigate to login page
         context.go('/login');
         
         // Show success message
@@ -188,10 +130,22 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
+    final authState = ref.watch(authProvider);
+    final user = authState.user;
+    final isLoading = authState.isLoading;
+
+    if (isLoading) {
       return const Center(
         child: CircularProgressIndicator(),
       );
+    }
+
+    // If not authenticated, redirect to login
+    if (!authState.isAuthenticated || user == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.go('/login');
+      });
+      return const Center(child: CircularProgressIndicator());
     }
 
     return ListView(
@@ -213,7 +167,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   child: Center(
                     child: Text(
-                      _userInitials,
+                      user.initials,
                       style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w500,
@@ -249,7 +203,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _userName,
+                    user.name,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
@@ -257,7 +211,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _userEmail,
+                    user.email,
                     style: const TextStyle(
                       color: AppTheme.mutedForeground,
                     ),
