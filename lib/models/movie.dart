@@ -5,6 +5,7 @@ class Movie {
   final String title;
   final double rating;
   final String image;
+  final String? posterUrl; // Added posterUrl field
   final String? genre;
   final int? year;
   final String? duration;
@@ -17,6 +18,7 @@ class Movie {
     required this.title,
     required this.rating,
     required this.image,
+    this.posterUrl, // Added posterUrl to constructor
     this.genre,
     this.year,
     this.duration,
@@ -27,11 +29,13 @@ class Movie {
 
   // Factory constructor for API response
   factory Movie.fromJson(Map<String, dynamic> json) {
+    final String? posterPath = json['posterUrl']; // Assuming 'posterUrl' from backend
     return Movie(
       id: json['id'].toString(),
       title: json['title'] ?? '',
       rating: 0.0, // Default rating since API doesn't provide it
-      image: '', // We'll use a placeholder since API doesn't provide images
+      image: posterPath ?? '', // Use posterPath if available, otherwise empty
+      posterUrl: posterPath, // Assign posterPath to posterUrl
       year: json['releaseYear'], // Updated to match Spring Boot entity
       genres: json['genres']?.toString().split(',').map((e) => e.trim()).toList() ?? [],
       genre: json['genres']?.toString().split(',').first.trim(),
@@ -44,6 +48,7 @@ class Movie {
       'title': title,
       'rating': rating,
       'image': image,
+      'posterUrl': posterUrl, // Include posterUrl in toJson
       'genre': genre,
       'year': year,
       'duration': duration,
