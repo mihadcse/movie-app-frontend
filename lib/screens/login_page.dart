@@ -3,6 +3,7 @@ import '../theme/app_theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
+import '../providers/theme_provider.dart'; // Import the new theme provider
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -35,9 +36,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         if (!mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login successful!'),
-            backgroundColor: AppTheme.primary,
+          SnackBar(
+            content: const Text('Login successful!'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
 
@@ -46,7 +47,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Login failed: $e'),
-            backgroundColor: AppTheme.destructive,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -60,9 +61,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   void _forgotPassword() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Password reset link sent to your email'),
-        backgroundColor: AppTheme.secondary,
+      SnackBar(
+        content: const Text('Password reset link sent to your email'),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
       ),
     );
   }
@@ -71,6 +72,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final isLoading = authState.isLoading;
+    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
+    final isDarkMode = themeModeType == ThemeModeType.dark;
 
     return Scaffold(
       body: SafeArea(
@@ -89,8 +92,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [AppTheme.primary, AppTheme.secondary],
+                        gradient: LinearGradient(
+                          colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -104,14 +107,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                     const SizedBox(height: 16),
                     ShaderMask(
-                      shaderCallback: (bounds) => const LinearGradient(
-                        colors: [AppTheme.primary, AppTheme.secondary],
+                      shaderCallback: (bounds) => LinearGradient(
+                        colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
                       ).createShader(bounds),
                       child: Text(
                         'CineMatch',
                         style: Theme.of(context).textTheme.displayMedium
                             ?.copyWith(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onPrimary,
                               fontWeight: FontWeight.w600,
                             ),
                       ),
@@ -130,6 +133,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
               // Login Form
               Card(
+                color: Theme.of(context).colorScheme.surface, // Use theme-specific card color
                 child: Padding(
                   padding: const EdgeInsets.all(24),
                   child: Form(
@@ -149,10 +153,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           autocorrect: false,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: 'Email',
                             hintText: 'Enter your email address',
-                            prefixIcon: Icon(Icons.email_outlined),
+                            prefixIcon: const Icon(Icons.email_outlined),
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant, // Use theme-specific muted color
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -188,6 +193,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 });
                               },
                             ),
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant, // Use theme-specific muted color
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -206,9 +212,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: _forgotPassword,
-                            child: const Text(
+                            child: Text(
                               'Forgot Password?',
-                              style: TextStyle(color: AppTheme.secondary),
+                              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
                             ),
                           ),
                         ),
@@ -250,7 +256,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               // Divider
               Row(
                 children: [
-                  const Expanded(child: Divider(color: AppTheme.muted)),
+                  Expanded(child: Divider(color: Theme.of(context).colorScheme.outlineVariant)), // Use theme-specific muted color
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
@@ -258,7 +264,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
-                  const Expanded(child: Divider(color: AppTheme.muted)),
+                  Expanded(child: Divider(color: Theme.of(context).colorScheme.outlineVariant)), // Use theme-specific muted color
                 ],
               ),
 
@@ -266,6 +272,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
               // Social Login Options
               Card(
+                color: Theme.of(context).colorScheme.surface, // Use theme-specific card color
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -279,7 +286,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         label: const Text('Continue with Google'),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
-                          side: const BorderSide(color: AppTheme.muted),
+                          side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant), // Use theme-specific muted color
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -293,7 +300,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         label: const Text('Continue with Apple'),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
-                          side: const BorderSide(color: AppTheme.muted),
+                          side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant), // Use theme-specific muted color
                         ),
                       ),
                     ],
@@ -313,10 +320,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                   TextButton(
                     onPressed: _navigateToRegister,
-                    child: const Text(
+                    child: Text(
                       'Sign Up',
                       style: TextStyle(
-                        color: AppTheme.primary,
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

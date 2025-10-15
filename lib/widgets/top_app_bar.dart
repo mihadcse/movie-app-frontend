@@ -21,26 +21,26 @@ class TopAppBarWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [AppTheme.primary, AppTheme.secondary],
+              gradient: LinearGradient(
+                colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
               ),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.movie_outlined,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onPrimary,
               size: 20,
             ),
           ),
           const SizedBox(width: 8),
           ShaderMask(
-            shaderCallback: (bounds) => const LinearGradient(
-              colors: [AppTheme.primary, AppTheme.secondary],
+            shaderCallback: (bounds) => LinearGradient(
+              colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
             ).createShader(bounds),
             child: Text(
               title,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
                 fontWeight: FontWeight.w500,
               ),
             ),

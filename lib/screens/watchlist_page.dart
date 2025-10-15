@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
 import '../models/movie.dart';
 import '../screens/movie_details.dart';
 import '../theme/app_theme.dart';
+import '../providers/theme_provider.dart'; // Import the new theme provider
 
-class WatchlistPage extends StatefulWidget {
+class WatchlistPage extends ConsumerStatefulWidget { // Change to ConsumerStatefulWidget
   const WatchlistPage({super.key});
 
   @override
-  State<WatchlistPage> createState() => _WatchlistPageState();
+  ConsumerState<WatchlistPage> createState() => _WatchlistPageState(); // Change to ConsumerState
 }
 
-class _WatchlistPageState extends State<WatchlistPage>
+class _WatchlistPageState extends ConsumerState<WatchlistPage> // Change to ConsumerState
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -111,6 +113,9 @@ class _WatchlistPageState extends State<WatchlistPage>
   }
 
   Widget _buildMovieList(List<Movie> movies, bool isFavorite) {
+    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
+    final isDarkMode = themeModeType == ThemeModeType.dark;
+
     if (movies.isEmpty) {
       return Center(
         child: Column(
@@ -119,14 +124,14 @@ class _WatchlistPageState extends State<WatchlistPage>
             Container(
               width: 96,
               height: 96,
-              decoration: const BoxDecoration(
-                color: AppTheme.muted,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceVariant,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 isFavorite ? Icons.favorite_outline : Icons.watch_later_outlined,
                 size: 48,
-                color: AppTheme.mutedForeground,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 16),
@@ -142,8 +147,8 @@ class _WatchlistPageState extends State<WatchlistPage>
               isFavorite
                   ? 'Start adding movies to your favorites'
                   : 'Add movies you want to watch later',
-              style: const TextStyle(
-                color: AppTheme.mutedForeground,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),
@@ -162,8 +167,8 @@ class _WatchlistPageState extends State<WatchlistPage>
           clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(
-              color: AppTheme.mutedForeground,
+            side: BorderSide(
+              color: Theme.of(context).colorScheme.outlineVariant,
               width: 1,
             ),
           ),
@@ -181,9 +186,9 @@ class _WatchlistPageState extends State<WatchlistPage>
                       fit: BoxFit.cover,
                       height: double.infinity,
                       placeholder: (context, url) => Container(
-                        color: AppTheme.muted,
-                        child: const Center(
-                          child: CircularProgressIndicator(),
+                        color: Theme.of(context).colorScheme.surfaceVariant,
+                        child: Center(
+                          child: CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                       ),
                     ),
@@ -211,9 +216,9 @@ class _WatchlistPageState extends State<WatchlistPage>
                               const SizedBox(height: 4),
                               Text(
                                 '${movie.genre} · ${movie.year}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
-                                  color: AppTheme.mutedForeground,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -224,16 +229,16 @@ class _WatchlistPageState extends State<WatchlistPage>
                                       Icons.star,
                                       size: 16,
                                       color: starIndex < (movie.rating / 2).floor()
-                                          ? AppTheme.secondary
-                                          : AppTheme.muted,
+                                          ? Theme.of(context).colorScheme.secondary
+                                          : Theme.of(context).colorScheme.surfaceVariant,
                                     );
                                   }),
                                   const SizedBox(width: 8),
                                   Text(
                                     movie.rating.toString(),
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 14,
-                                      color: AppTheme.mutedForeground,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ],
@@ -243,20 +248,20 @@ class _WatchlistPageState extends State<WatchlistPage>
                           // Remove Button
                           InkWell(
                             onTap: () => _removeMovie(movie, isFavorite),
-                            child: const Row(
+                            child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
                                   Icons.delete_outline,
                                   size: 16,
-                                  color: AppTheme.destructive,
+                                  color: Theme.of(context).colorScheme.error,
                                 ),
-                                SizedBox(width: 4),
+                                const SizedBox(width: 4),
                                 Text(
                                   'Remove',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: AppTheme.destructive,
+                                    color: Theme.of(context).colorScheme.error,
                                   ),
                                 ),
                               ],
@@ -277,23 +282,26 @@ class _WatchlistPageState extends State<WatchlistPage>
 
   @override
   Widget build(BuildContext context) {
+    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
+    final isDarkMode = themeModeType == ThemeModeType.dark;
+
     return Column(
       children: [
         Container(
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
-            color: AppTheme.muted,
+            color: Theme.of(context).colorScheme.surfaceVariant,
             borderRadius: BorderRadius.circular(24),
           ),
           child: TabBar(
             controller: _tabController,
             indicator: BoxDecoration(
-              color: AppTheme.primary,
+              color: Theme.of(context).colorScheme.primary,
               borderRadius: BorderRadius.circular(24),
             ),
-            labelColor: Colors.white,
-            unselectedLabelColor: AppTheme.mutedForeground,
+            labelColor: Theme.of(context).colorScheme.onPrimary,
+            unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
             dividerColor: Colors.transparent,
             tabs: const [
               Tab(

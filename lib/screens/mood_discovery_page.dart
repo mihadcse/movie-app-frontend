@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
 import '../models/movie.dart';
 import '../widgets/movie_card.dart';
 import '../screens/movie_details.dart';
 import '../theme/app_theme.dart';
+import '../providers/theme_provider.dart'; // Import the new theme provider
 
-class MoodDiscoveryPage extends StatefulWidget {
+class MoodDiscoveryPage extends ConsumerStatefulWidget { // Change to ConsumerStatefulWidget
   const MoodDiscoveryPage({super.key});
 
   @override
-  State<MoodDiscoveryPage> createState() => _MoodDiscoveryPageState();
+  ConsumerState<MoodDiscoveryPage> createState() => _MoodDiscoveryPageState(); // Change to ConsumerState
 }
 
-class _MoodDiscoveryPageState extends State<MoodDiscoveryPage> {
+class _MoodDiscoveryPageState extends ConsumerState<MoodDiscoveryPage> { // Change to ConsumerState
   String? _selectedMood;
 
   final List<Mood> _moods = [
@@ -148,6 +150,9 @@ class _MoodDiscoveryPageState extends State<MoodDiscoveryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
+    final isDarkMode = themeModeType == ThemeModeType.dark;
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -161,19 +166,19 @@ class _MoodDiscoveryPageState extends State<MoodDiscoveryPage> {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [AppTheme.primary, AppTheme.secondary],
+                  gradient: LinearGradient(
+                    colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
                   ),
                   borderRadius: BorderRadius.circular(24),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.auto_awesome, color: Colors.white, size: 20),
-                    SizedBox(width: 8),
+                    Icon(Icons.auto_awesome, color: Theme.of(context).colorScheme.onPrimary, size: 20),
+                    const SizedBox(width: 8),
                     Text(
                       'Mood Discovery',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
                     ),
                   ],
                 ),
@@ -187,10 +192,10 @@ class _MoodDiscoveryPageState extends State<MoodDiscoveryPage> {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Select your mood and discover the perfect movie for you',
                 style: TextStyle(
-                  color: AppTheme.mutedForeground,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -225,7 +230,7 @@ class _MoodDiscoveryPageState extends State<MoodDiscoveryPage> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: isSelected ? AppTheme.primary : Colors.transparent,
+                    color: isSelected ? Theme.of(context).colorScheme.primary : Colors.transparent,
                     width: 2,
                   ),
                 ),
@@ -243,7 +248,7 @@ class _MoodDiscoveryPageState extends State<MoodDiscoveryPage> {
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        color: AppTheme.background.withOpacity(0.8),
+                        color: Theme.of(context).colorScheme.background.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
@@ -260,8 +265,8 @@ class _MoodDiscoveryPageState extends State<MoodDiscoveryPage> {
                             mood.label,
                             style: TextStyle(
                               color: isSelected
-                                  ? AppTheme.primary
-                                  : AppTheme.foreground,
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -280,10 +285,10 @@ class _MoodDiscoveryPageState extends State<MoodDiscoveryPage> {
         if (_selectedMood != null && _currentMovies.isNotEmpty) ...[
           RichText(
             text: TextSpan(
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
-                color: AppTheme.foreground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               children: [
                 const TextSpan(text: 'Perfect for your '),
@@ -291,7 +296,7 @@ class _MoodDiscoveryPageState extends State<MoodDiscoveryPage> {
                   text: _moods
                       .firstWhere((m) => m.id == _selectedMood)
                       .label,
-                  style: const TextStyle(color: AppTheme.primary),
+                  style: TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),
                 const TextSpan(text: ' mood'),
               ],
@@ -317,13 +322,13 @@ class _MoodDiscoveryPageState extends State<MoodDiscoveryPage> {
             },
           ),
         ] else if (_selectedMood == null)
-          const Center(
+          Center(
             child: Padding(
-              padding: EdgeInsets.all(32),
+              padding: const EdgeInsets.all(32),
               child: Text(
                 'Select a mood above to discover movies that match your vibe',
                 style: TextStyle(
-                  color: AppTheme.mutedForeground,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 textAlign: TextAlign.center,
               ),

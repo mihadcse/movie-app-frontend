@@ -4,6 +4,7 @@ import '../models/movie.dart';
 import '../services/movie_api_service.dart';
 import '../theme/app_theme.dart';
 import '../providers/movie_provider.dart';
+import '../providers/theme_provider.dart'; // Import the new theme provider
 
 class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({super.key});
@@ -72,17 +73,19 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     final isSearching = searchState.isSearching;
     final hasSearched = searchState.hasSearched;
     final error = searchState.error;
+    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
+    final isDarkMode = themeModeType == ThemeModeType.dark;
 
     if (isSearching) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(color: AppTheme.primary),
-            SizedBox(height: 16),
+            CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
+            const SizedBox(height: 16),
             Text(
               'Searching movies...',
-              style: TextStyle(color: AppTheme.mutedForeground),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ],
         ),
@@ -94,10 +97,10 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.error_outline,
               size: 64,
-              color: AppTheme.destructive,
+              color: Theme.of(context).colorScheme.error,
             ),
             const SizedBox(height: 16),
             const Text(
@@ -110,7 +113,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             const SizedBox(height: 8),
             Text(
               error,
-              style: const TextStyle(color: AppTheme.mutedForeground),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -131,14 +134,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             Container(
               width: 96,
               height: 96,
-              decoration: const BoxDecoration(
-                color: AppTheme.muted,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceVariant,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.search,
                 size: 48,
-                color: AppTheme.mutedForeground,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 16),
@@ -150,10 +153,10 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Enter at least 2 characters to start searching',
               style: TextStyle(
-                color: AppTheme.mutedForeground,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -169,14 +172,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             Container(
               width: 96,
               height: 96,
-              decoration: const BoxDecoration(
-                color: AppTheme.muted,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceVariant,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.search_off,
                 size: 48,
-                color: AppTheme.mutedForeground,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 16),
@@ -190,8 +193,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             const SizedBox(height: 8),
             Text(
               'No movies found for "${_searchController.text}"',
-              style: const TextStyle(
-                color: AppTheme.mutedForeground,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -230,29 +233,29 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   flex: 3,
                   child: Container(
                     width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: AppTheme.muted,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                     ),
                     child: Image.network(
                       imageUrl,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
-                          color: AppTheme.muted,
-                          child: const Column(
+                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
                                 Icons.movie,
                                 size: 32,
-                                color: AppTheme.mutedForeground,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
-                              SizedBox(height: 4),
+                              const SizedBox(height: 4),
                               Text(
                                 'No Image',
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: AppTheme.mutedForeground,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -271,9 +274,10 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       children: [
                         Text(
                           movie.title,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 14,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -282,8 +286,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           const SizedBox(height: 4),
                           Text(
                             movie.year.toString(),
-                            style: const TextStyle(
-                              color: AppTheme.mutedForeground,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                               fontSize: 12,
                             ),
                           ),
@@ -296,13 +300,13 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: AppTheme.primary.withOpacity(0.1),
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               movie.genre!,
-                              style: const TextStyle(
-                                color: AppTheme.primary,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
                                 fontSize: 10,
                               ),
                             ),
@@ -324,6 +328,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   Widget build(BuildContext context) {
     final searchState = ref.watch(searchProvider);
     final hasSearched = searchState.hasSearched;
+    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
+    final isDarkMode = themeModeType == ThemeModeType.dark;
     
     return Scaffold(
       body: Column(
@@ -357,8 +363,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                 : Icons.filter_list_outlined,
                           ),
                           color: _showFilters
-                              ? AppTheme.primary
-                              : null,
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.onSurfaceVariant,
                           onPressed: () {
                             setState(() {
                               _showFilters = !_showFilters;
@@ -377,12 +383,16 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 if (_showFilters && hasSearched && _filteredMovies.isNotEmpty) ...[
                   const SizedBox(height: 16),
                   Card(
+                    color: Theme.of(context).colorScheme.surface,
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Filter by Genre'),
+                          Text(
+                            'Filter by Genre',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
                           const SizedBox(height: 12),
                           Wrap(
                             spacing: 8,
@@ -398,8 +408,13 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                     _selectedGenre = selected ? genre.toLowerCase() : 'all';
                                   });
                                 },
-                                selectedColor: AppTheme.primary,
-                                backgroundColor: AppTheme.muted,
+                                selectedColor: Theme.of(context).colorScheme.primary,
+                                backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                                labelStyle: TextStyle(
+                                  color: isSelected
+                                      ? Theme.of(context).colorScheme.onPrimary
+                                      : Theme.of(context).colorScheme.onSurface,
+                                ),
                               );
                             }).toList(),
                           ),

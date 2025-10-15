@@ -8,6 +8,7 @@ import '../widgets/top_app_bar.dart';
 import '../screens/movie_details.dart';
 import '../theme/app_theme.dart';
 import '../providers/movie_provider.dart';
+import '../providers/theme_provider.dart'; // Import the new theme provider
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -59,6 +60,8 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Widget _buildFeaturedMoviesCarousel() {
     final featuredMovies = ref.watch(featuredMoviesProvider);
+    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
+    final isDarkMode = themeModeType == ThemeModeType.dark;
     
     if (featuredMovies.isEmpty) return const SizedBox.shrink();
 
@@ -94,11 +97,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
-                        color: AppTheme.muted,
-                        child: const Icon(
+                        color: Theme.of(context).colorScheme.surfaceVariant, // Use theme-specific muted color
+                        child: Icon(
                           Icons.movie,
                           size: 64,
-                          color: AppTheme.mutedForeground,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant, // Use theme-specific mutedForeground color
                         ),
                       );
                     },
@@ -110,8 +113,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          AppTheme.background.withOpacity(0.6),
-                          AppTheme.background,
+                          Theme.of(context).colorScheme.background.withOpacity(0.6), // Use theme-specific background color
+                          Theme.of(context).colorScheme.background, // Use theme-specific background color
                         ],
                       ),
                     ),
@@ -139,13 +142,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.primary.withOpacity(0.2),
+                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(24),
                                 ),
                                 child: Text(
                                   movie.year.toString(),
-                                  style: const TextStyle(
-                                    color: AppTheme.primary,
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -159,13 +162,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.secondary.withOpacity(0.2),
+                                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(24),
                                 ),
                                 child: Text(
                                   movie.genre!,
-                                  style: const TextStyle(
-                                    color: AppTheme.secondary,
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.secondary,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -210,8 +213,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(4),
                     color: entry.key == _carouselIndex
-                        ? AppTheme.primary
-                        : AppTheme.muted,
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.surfaceVariant, // Use theme-specific muted color
                   ),
                 );
               }).toList(),
@@ -226,6 +229,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     final movieState = ref.watch(movieProvider);
     final movies = movieState.movies;
     final hasMoreData = movieState.hasMoreData;
+    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
+    final isDarkMode = themeModeType == ThemeModeType.dark;
 
     return GridView.builder(
       shrinkWrap: true,
@@ -240,9 +245,9 @@ class _HomePageState extends ConsumerState<HomePage> {
       itemCount: movies.length + (hasMoreData ? 1 : 0),
       itemBuilder: (context, index) {
         if (index >= movies.length) {
-          return const Center(
+          return Center(
             child: CircularProgressIndicator(
-              color: AppTheme.primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
           );
         }
@@ -262,28 +267,28 @@ class _HomePageState extends ConsumerState<HomePage> {
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: AppTheme.muted,
+                      color: Theme.of(context).colorScheme.surfaceVariant, // Use theme-specific muted color
                     ),
                     child: Image.network(
                       imageUrl,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
-                          color: AppTheme.muted,
+                          color: Theme.of(context).colorScheme.surfaceVariant, // Use theme-specific muted color
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
                                 Icons.movie,
                                 size: 32,
-                                color: AppTheme.mutedForeground,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant, // Use theme-specific mutedForeground color
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 'No Image',
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: AppTheme.mutedForeground,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant, // Use theme-specific mutedForeground color
                                 ),
                               ),
                             ],
@@ -302,9 +307,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                       children: [
                         Text(
                           movie.title,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 14,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -313,8 +319,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                           const SizedBox(height: 4),
                           Text(
                             movie.year.toString(),
-                            style: const TextStyle(
-                              color: AppTheme.mutedForeground,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant, // Use theme-specific mutedForeground color
                               fontSize: 12,
                             ),
                           ),
@@ -330,13 +336,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.primary.withOpacity(0.1),
+                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
                                   genre,
-                                  style: const TextStyle(
-                                    color: AppTheme.primary,
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.primary,
                                     fontSize: 10,
                                   ),
                                 ),
@@ -362,6 +368,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     final movies = movieState.movies;
     final isLoading = movieState.isLoading;
     final error = movieState.error;
+    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
+    final isDarkMode = themeModeType == ThemeModeType.dark;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -376,17 +384,17 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
       body: RefreshIndicator(
         onRefresh: _refreshMovies,
-        color: AppTheme.primary,
+        color: Theme.of(context).colorScheme.primary,
         child: isLoading && movies.isEmpty
-            ? const Center(
+            ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(color: AppTheme.primary),
-                    SizedBox(height: 16),
+                    CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
+                    const SizedBox(height: 16),
                     Text(
                       'Loading movies...',
-                      style: TextStyle(color: AppTheme.mutedForeground),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant), // Use theme-specific mutedForeground color
                     ),
                   ],
                 ),
@@ -396,10 +404,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.error_outline,
                           size: 64,
-                          color: AppTheme.destructive,
+                          color: Theme.of(context).colorScheme.error,
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -409,7 +417,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                         const SizedBox(height: 8),
                         Text(
                           error,
-                          style: const TextStyle(color: AppTheme.mutedForeground),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant), // Use theme-specific mutedForeground color
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
@@ -448,8 +456,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                                         children: [
                                           Text(
                                             '${movies.length} movies available',
-                                            style: const TextStyle(
-                                              color: AppTheme.mutedForeground,
+                                            style: TextStyle(
+                                              color: Theme.of(context).colorScheme.onSurfaceVariant, // Use theme-specific mutedForeground color
                                             ),
                                           ),
                                         ],
