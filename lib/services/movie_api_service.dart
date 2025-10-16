@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/movie.dart';
+import 'config_helper.dart';
 
 class MovieApiService {
   // Replace with your actual backend URL
-  static const String baseUrl = 'http://localhost:8080/api/movies';
+  // static const String baseUrl = 'http://localhost:8080/api/movies';
+  static final String baseUrl = "${ApiConfig.baseUrl}/api/movies";
+
   
   static Future<MoviePageResponse> getAllMovies({
     int pageNumber = 0,

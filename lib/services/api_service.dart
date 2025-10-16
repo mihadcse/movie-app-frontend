@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'config_helper.dart';
 
 class ApiService {
-  static const String baseUrl = "http://localhost:8080/api/v1/auth";
+  // static const String baseUrl = "http://localhost:8080/api/v1/auth";
+  static final String baseUrl = "${ApiConfig.baseUrl}/api/v1/auth";
+
   // Example: "http://192.168.0.105:8080/api/v1/auth"
 
   // REGISTER
