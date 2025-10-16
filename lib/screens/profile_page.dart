@@ -6,6 +6,7 @@ import '../models/movie.dart';
 import '../theme/app_theme.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart'; // Import the new theme provider
+import '../widgets/shadow_container.dart'; // Import the ShadowContainer widget
 
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
@@ -419,7 +420,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   onChanged: (value) {
                     ref.read(themeProvider.notifier).toggleTheme(); // Toggle theme using provider
                   },
-                  activeColor: Theme.of(context).colorScheme.primary,
+                  activeColor: Theme.of(context).colorScheme.secondary, // Use secondary color for dark mode track
+                  activeThumbColor: Theme.of(context).colorScheme.onSecondary, // Make thumb visible
                 ),
               ],
             ),
@@ -428,23 +430,31 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         const SizedBox(height: 16),
 
         // Logout Button
-        ElevatedButton(
-          onPressed: _logout,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.error.withOpacity(0.1),
-            foregroundColor: Theme.of(context).colorScheme.error,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.logout, color: Theme.of(context).colorScheme.error),
-              const SizedBox(width: 8),
-              Text(
-                'Logout',
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              ),
-            ],
+        ShadowContainer(
+          borderRadius: BorderRadius.circular(24), // Match defaultRadius from app_theme
+          elevation: 4, // Subtle elevation for the button
+          shadowColor: isDarkMode ? Colors.black54 : Colors.black26, // Adjust shadow color based on theme
+          padding: const EdgeInsets.all(0), // No internal padding, button will handle it
+          child: ElevatedButton(
+            onPressed: _logout,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent, // Make background transparent to show ShadowContainer's color
+              foregroundColor: Theme.of(context).colorScheme.error,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              elevation: 0, // Remove ElevatedButton's intrinsic elevation
+              shadowColor: Colors.transparent, // Remove ElevatedButton's intrinsic shadow
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.logout, color: Theme.of(context).colorScheme.error),
+                const SizedBox(width: 8),
+                Text(
+                  'Logout',
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ],
+            ),
           ),
         ),
       ],
