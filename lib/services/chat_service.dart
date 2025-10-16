@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'config_helper.dart';
 
 class ChatService {
-  static const String baseUrl = "http://localhost:8080/api/chat";
+  // static const String baseUrl = "http://localhost:8080/api/chat";
+  static final String baseUrl = "${ApiConfig.baseUrl}/api/chat";
+
 
   static Future<String> sendMessage(String message) async {
     final response = await http.post(
