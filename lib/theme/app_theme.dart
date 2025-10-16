@@ -43,6 +43,24 @@ class AppTheme {
     swapLegacyOnMaterial3: true,
     // To use the playground font, add GoogleFonts package and uncomment
     // fontFamily: GoogleFonts.notoSans().fontFamily,
+  ).copyWith(
+    cardTheme: const CardThemeData(
+      elevation: 4,
+      shadowColor: Colors.black45,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        elevation: 4,
+        shadowColor: Colors.black45,
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        side: BorderSide(color: _rustDeepOrangePrimary.withOpacity(0.7)),
+        elevation: 2,
+        shadowColor: Colors.black26,
+      ),
+    ),
   );
 
   static ThemeData darkTheme = FlexThemeData.dark(
@@ -66,5 +84,23 @@ class AppTheme {
     swapLegacyOnMaterial3: true,
     // To use the playground font, add GoogleFonts package and uncomment
     // fontFamily: GoogleFonts.notoSans().fontFamily,
+  ).copyWith(
+    cardTheme: const CardThemeData(
+      elevation: 12,
+      shadowColor: Colors.white30 ,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        elevation: 12,
+        shadowColor: Colors.white30,
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        side: BorderSide(color: _rustDeepOrangePrimary.withOpacity(1.0)),
+        elevation: 6,
+        shadowColor: Colors.white24,
+      ),
+    ),
   );
 }
