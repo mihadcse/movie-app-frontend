@@ -5,19 +5,19 @@ class AppTheme {
   // Define a custom color for destructive actions, not part of FlexColorScheme directly
   static const Color destructive = Color(0xFFD4183D);
 
-  // Custom "Rust deep orange" color
-  static const Color _rustDeepOrangePrimary = Color(0xFFDA5B0B);
+  // Custom "Rust deep blue" color
+  static const Color _rustDeepBluePrimary = const Color.fromARGB(255, 24, 50, 199);
 
   // Custom FlexSchemeColor for light theme
   static final FlexSchemeColor _lightFlexScheme = FlexSchemeColor.from(
-    primary: _rustDeepOrangePrimary,
+    primary: const Color.fromARGB(255, 24, 50, 199),
     brightness: Brightness.light,
     // You can define other colors here if needed, or let FlexColorScheme derive them
   );
 
   // Custom FlexSchemeColor for dark theme
   static final FlexSchemeColor _darkFlexScheme = FlexSchemeColor.from(
-    primary: _rustDeepOrangePrimary,
+    primary: _rustDeepBluePrimary,
     brightness: Brightness.dark,
     // You can define other colors here if needed, or let FlexColorScheme derive them
   );
@@ -56,7 +56,7 @@ class AppTheme {
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        side: BorderSide(color: _rustDeepOrangePrimary.withOpacity(0.7)),
+        side: BorderSide(color: _rustDeepBluePrimary.withOpacity(0.7)),
         elevation: 2,
         shadowColor: Colors.black26,
       ),
@@ -97,7 +97,7 @@ class AppTheme {
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        side: BorderSide(color: _rustDeepOrangePrimary.withOpacity(1.0)),
+        side: BorderSide(color: _rustDeepBluePrimary.withOpacity(1.0)),
         elevation: 6,
         shadowColor: Colors.white24,
       ),

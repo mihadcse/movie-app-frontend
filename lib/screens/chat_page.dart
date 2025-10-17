@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import '../services/chat_service.dart';
 
 class ChatPage extends StatefulWidget {
@@ -125,7 +126,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         centerTitle: false,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, color: colorScheme.onSurface),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.go('/profile'),
         ),
         title: Row(
           children: [
