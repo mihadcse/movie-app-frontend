@@ -6,9 +6,8 @@ import '../models/movie.dart';
 import '../services/movie_api_service.dart';
 import '../widgets/top_app_bar.dart';
 import '../screens/movie_details.dart';
-import '../theme/app_theme.dart';
 import '../providers/movie_provider.dart';
-import '../providers/theme_provider.dart'; // Import the new theme provider
+// import '../providers/theme_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -60,8 +59,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Widget _buildFeaturedMoviesCarousel() {
     final featuredMovies = ref.watch(featuredMoviesProvider);
-    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
-    final isDarkMode = themeModeType == ThemeModeType.dark;
+  // Theme can be accessed via Theme.of(context) where needed
     
     if (featuredMovies.isEmpty) return const SizedBox.shrink();
 
@@ -229,8 +227,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     final movieState = ref.watch(movieProvider);
     final movies = movieState.movies;
     final hasMoreData = movieState.hasMoreData;
-    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
-    final isDarkMode = themeModeType == ThemeModeType.dark;
+  // Theme can be accessed via Theme.of(context) where needed
 
     return GridView.builder(
       shrinkWrap: true,
@@ -368,8 +365,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     final movies = movieState.movies;
     final isLoading = movieState.isLoading;
     final error = movieState.error;
-    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
-    final isDarkMode = themeModeType == ThemeModeType.dark;
+  // Theme can be accessed via Theme.of(context) where needed
 
     return Scaffold(
       extendBodyBehindAppBar: true,

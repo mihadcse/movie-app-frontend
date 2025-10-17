@@ -3,7 +3,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/movie.dart';
-import '../theme/app_theme.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart'; // Import the new theme provider
 import '../widgets/shadow_container.dart'; // Import the ShadowContainer widget
@@ -56,8 +55,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
-        final currentThemeMode = ref.read(themeProvider);
-        final isDarkMode = currentThemeMode == ThemeModeType.dark;
         return AlertDialog(
           title: const Text('Logout'),
           content: const Text('Are you sure you want to logout?'),
@@ -467,8 +464,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     String? trailing,
     required VoidCallback onTap,
   }) {
-    final currentThemeMode = ref.read(themeProvider);
-    final isDarkMode = currentThemeMode == ThemeModeType.dark;
     return Card(
       child: InkWell(
         onTap: onTap,

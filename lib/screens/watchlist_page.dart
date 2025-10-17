@@ -3,8 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
 import '../models/movie.dart';
 import '../screens/movie_details.dart';
-import '../theme/app_theme.dart';
-import '../providers/theme_provider.dart'; // Import the new theme provider
+// import '../providers/theme_provider.dart';
 
 class WatchlistPage extends ConsumerStatefulWidget { // Change to ConsumerStatefulWidget
   const WatchlistPage({super.key});
@@ -113,8 +112,7 @@ class _WatchlistPageState extends ConsumerState<WatchlistPage> // Change to Cons
   }
 
   Widget _buildMovieList(List<Movie> movies, bool isFavorite) {
-    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
-    final isDarkMode = themeModeType == ThemeModeType.dark;
+  // Theme can be accessed via Theme.of(context)
 
     if (movies.isEmpty) {
       return Center(
@@ -282,8 +280,7 @@ class _WatchlistPageState extends ConsumerState<WatchlistPage> // Change to Cons
 
   @override
   Widget build(BuildContext context) {
-    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
-    final isDarkMode = themeModeType == ThemeModeType.dark;
+  // Theme can be accessed via Theme.of(context)
 
     return Column(
       children: [

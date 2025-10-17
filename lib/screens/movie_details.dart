@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
 import '../models/movie.dart';
-import '../theme/app_theme.dart';
-import '../providers/theme_provider.dart'; // Import the new theme provider
+// import '../providers/theme_provider.dart';
 
 class MovieDetailsPage extends ConsumerWidget { // Change to ConsumerWidget
   final Movie movie;
@@ -11,8 +10,7 @@ class MovieDetailsPage extends ConsumerWidget { // Change to ConsumerWidget
 
   @override
   Widget build(BuildContext context, WidgetRef ref) { // Add WidgetRef ref
-    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
-    final isDarkMode = themeModeType == ThemeModeType.dark;
+  // Theme can be accessed via Theme.of(context)
 
     return Scaffold(
       body: CustomScrollView(

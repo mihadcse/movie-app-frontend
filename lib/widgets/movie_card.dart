@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
 import '../models/movie.dart';
-import '../theme/app_theme.dart';
-import '../providers/theme_provider.dart'; // Import the new theme provider
+// import '../providers/theme_provider.dart';
 import 'shadow_container.dart'; // Import the ShadowContainer widget
 
 class MovieCard extends ConsumerWidget { // Change to ConsumerWidget
@@ -20,8 +19,8 @@ class MovieCard extends ConsumerWidget { // Change to ConsumerWidget
 
   @override
   Widget build(BuildContext context, WidgetRef ref) { // Add WidgetRef ref
-    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
-    final isDarkMode = themeModeType == ThemeModeType.dark;
+    final brightness = Theme.of(context).brightness;
+    final isDarkMode = brightness == Brightness.dark;
 
     return GestureDetector(
       onTap: onTap,

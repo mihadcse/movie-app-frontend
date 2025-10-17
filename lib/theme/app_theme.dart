@@ -44,6 +44,22 @@ class AppTheme {
     // To use the playground font, add GoogleFonts package and uncomment
     // fontFamily: GoogleFonts.notoSans().fontFamily,
   ).copyWith(
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: const Color(0xFFFFFFFF),
+      indicatorColor: _rustDeepBluePrimary.withOpacity(0.12),
+      labelTextStyle: MaterialStateProperty.resolveWith<TextStyle?>((states) {
+        final isSelected = states.contains(MaterialState.selected);
+        return TextStyle(
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+        );
+      }),
+      iconTheme: MaterialStateProperty.resolveWith<IconThemeData?>((states) {
+        final isSelected = states.contains(MaterialState.selected);
+        return IconThemeData(
+          size: isSelected ? 26 : 24,
+        );
+      }),
+    ),
     cardTheme: const CardThemeData(
       elevation: 4,
       shadowColor: Colors.black45,
@@ -85,6 +101,22 @@ class AppTheme {
     // To use the playground font, add GoogleFonts package and uncomment
     // fontFamily: GoogleFonts.notoSans().fontFamily,
   ).copyWith(
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: const Color(0xFF121212),
+      indicatorColor: _rustDeepBluePrimary.withOpacity(0.24),
+      labelTextStyle: MaterialStateProperty.resolveWith<TextStyle?>((states) {
+        final isSelected = states.contains(MaterialState.selected);
+        return TextStyle(
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+        );
+      }),
+      iconTheme: MaterialStateProperty.resolveWith<IconThemeData?>((states) {
+        final isSelected = states.contains(MaterialState.selected);
+        return IconThemeData(
+          size: isSelected ? 26 : 24,
+        );
+      }),
+    ),
     cardTheme: const CardThemeData(
       elevation: 12,
       shadowColor: Colors.white30 ,

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
-import '../providers/theme_provider.dart'; // Import the new theme provider
+// import '../providers/theme_provider.dart'; // Theme toggling not used on this screen currently
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -72,8 +71,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final isLoading = authState.isLoading;
-    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
-    final isDarkMode = themeModeType == ThemeModeType.dark;
+  // Watch the theme provider if needed in the future for dynamic styling
 
     return Scaffold(
       body: SafeArea(

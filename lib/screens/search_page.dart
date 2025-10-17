@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/movie.dart';
 import '../services/movie_api_service.dart';
-import '../theme/app_theme.dart';
 import '../providers/movie_provider.dart';
-import '../providers/theme_provider.dart'; // Import the new theme provider
+// import '../providers/theme_provider.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({super.key});
@@ -73,8 +72,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     final isSearching = searchState.isSearching;
     final hasSearched = searchState.hasSearched;
     final error = searchState.error;
-    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
-    final isDarkMode = themeModeType == ThemeModeType.dark;
+  // Theme can be accessed via Theme.of(context)
 
     if (isSearching) {
       return Center(
@@ -328,8 +326,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   Widget build(BuildContext context) {
     final searchState = ref.watch(searchProvider);
     final hasSearched = searchState.hasSearched;
-    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
-    final isDarkMode = themeModeType == ThemeModeType.dark;
+  // Theme can be accessed via Theme.of(context)
     
     return Scaffold(
       body: Column(

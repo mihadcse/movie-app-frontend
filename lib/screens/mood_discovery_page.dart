@@ -3,8 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
 import '../models/movie.dart';
 import '../widgets/movie_card.dart';
 import '../screens/movie_details.dart';
-import '../theme/app_theme.dart';
-import '../providers/theme_provider.dart'; // Import the new theme provider
+// import '../providers/theme_provider.dart';
 
 class MoodDiscoveryPage extends ConsumerStatefulWidget { // Change to ConsumerStatefulWidget
   const MoodDiscoveryPage({super.key});
@@ -150,8 +149,7 @@ class _MoodDiscoveryPageState extends ConsumerState<MoodDiscoveryPage> { // Chan
 
   @override
   Widget build(BuildContext context) {
-    final themeModeType = ref.watch(themeProvider); // Watch the theme provider
-    final isDarkMode = themeModeType == ThemeModeType.dark;
+  // Theme can be accessed via Theme.of(context)
 
     return ListView(
       padding: const EdgeInsets.all(16),
