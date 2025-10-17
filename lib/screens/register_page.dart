@@ -102,7 +102,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               Row(
                 children: [
                   IconButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => context.go('/login'),
                     icon: const Icon(Icons.arrow_back),
                     style: IconButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.surface, // Use theme-specific card color
