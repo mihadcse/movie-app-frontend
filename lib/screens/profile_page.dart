@@ -373,14 +373,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         _buildMenuItem(
           icon: Icons.star_outline,
           label: 'My Ratings',
-          trailing: '32',
-          onTap: () {},
+          onTap: () {
+            context.go('/my-ratings');
+          },
         ),
         const SizedBox(height: 12),
         _buildMenuItem(
           icon: Icons.history,
-          label: 'Viewing History',
-          onTap: () {},
+          label: 'Mood Discovery',
+          onTap: () {
+            context.go('/mood-discovery');
+          },
         ),
         const SizedBox(height: 24),
 
