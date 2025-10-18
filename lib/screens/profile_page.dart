@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/movie.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart'; // Import the new theme provider
+import '../providers/language_provider.dart'; // Import language provider
 import '../widgets/shadow_container.dart'; // Import the ShadowContainer widget
 
 class ProfilePage extends ConsumerStatefulWidget {
@@ -51,13 +52,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   }
 
   void _logout() async {
+    final localizations = ref.read(localizationProvider);
+    
     // Show confirmation dialog
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Logout'),
-          content: const Text('Are you sure you want to logout?'),
+          title: Text(localizations.logout),
+          content: Text(localizations.logoutConfirmation),
           backgroundColor: Theme.of(context).colorScheme.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -66,7 +69,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
               child: Text(
-                'Cancel',
+                localizations.cancel,
                 style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
@@ -76,7 +79,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 backgroundColor: Theme.of(context).colorScheme.error,
                 foregroundColor: Theme.of(context).colorScheme.onError,
               ),
-              child: const Text('Logout'),
+              child: Text(localizations.logout),
             ),
           ],
         );
@@ -98,7 +101,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 ),
               ),
               const SizedBox(width: 12),
-              const Text('Logging out...'),
+              Text(localizations.loggingOut),
             ],
           ),
           backgroundColor: Theme.of(context).colorScheme.primary,
@@ -118,7 +121,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text('Successfully logged out'),
+                content: Text(localizations.successfullyLoggedOut),
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 duration: const Duration(seconds: 2),
               ),
@@ -136,6 +139,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     final isLoading = authState.isLoading;
     final themeModeType = ref.watch(themeProvider); // Watch the theme provider
     final isDarkMode = themeModeType == ThemeModeType.dark;
+    final localizations = ref.watch(localizationProvider); // Watch localization provider
 
     if (isLoading) {
       return const Center(
@@ -152,7 +156,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     }
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
       children: [
         // Profile Header
         Row(
@@ -272,12 +276,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'My Recent Ratings',
+              localizations.myRecentRatings,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             TextButton(
               onPressed: () {},
-              child: const Text('See All'),
+              child: Text(localizations.seeAll),
             ),
           ],
         ),
@@ -358,13 +362,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         // Menu Items
         _buildMenuItem(
           icon: Icons.settings_outlined,
-          label: 'Account Settings',
-          onTap: () {},
+          label: localizations.accountSettings,
+          onTap: () {
+            context.go('/settings');
+          },
         ),
         const SizedBox(height: 12),
         _buildMenuItem(
           icon: Icons.smart_toy_outlined,
-          label: 'Gemini AI Chat',
+          label: localizations.geminiAIChat,
           onTap: () {
             context.go('/chat');
           },
@@ -372,7 +378,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         const SizedBox(height: 12),
         _buildMenuItem(
           icon: Icons.star_outline,
-          label: 'My Ratings',
+          label: localizations.myRatings,
           onTap: () {
             context.go('/my-ratings');
           },
@@ -380,7 +386,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         const SizedBox(height: 12),
         _buildMenuItem(
           icon: Icons.history,
-          label: 'Mood Discovery',
+          label: localizations.moodDiscovery,
           onTap: () {
             context.go('/mood-discovery');
           },
@@ -410,7 +416,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'Dark Mode',
+                      localizations.darkMode,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ],
@@ -450,7 +456,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 Icon(Icons.logout, color: Theme.of(context).colorScheme.error),
                 const SizedBox(width: 8),
                 Text(
-                  'Logout',
+                  localizations.logout,
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ],

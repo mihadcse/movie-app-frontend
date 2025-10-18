@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../models/movie.dart';
 import 'mood_recommendations_page.dart';
 
@@ -67,13 +68,22 @@ class _MoodDiscoveryPageState extends ConsumerState<MoodDiscoveryPage> {
   Widget build(BuildContext context) {
   // Theme can be accessed via Theme.of(context)
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        // Header
-        Center(
-          child: Column(
-            children: [
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/profile'),
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        children: [
+          // Header
+          Center(
+            child: Column(
+              children: [
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -168,7 +178,9 @@ class _MoodDiscoveryPageState extends ConsumerState<MoodDiscoveryPage> {
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.background.withOpacity(0.8),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.black.withOpacity(0.2)
+                            : Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
@@ -183,9 +195,17 @@ class _MoodDiscoveryPageState extends ConsumerState<MoodDiscoveryPage> {
                           const SizedBox(height: 8),
                           Text(
                             mood.label,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              fontWeight: FontWeight.w500,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black26,
+                                  blurRadius: 2,
+                                  offset: Offset(0, 1),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -198,6 +218,7 @@ class _MoodDiscoveryPageState extends ConsumerState<MoodDiscoveryPage> {
           },
         ),
       ],
+      ),
     );
   }
 }

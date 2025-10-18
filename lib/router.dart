@@ -11,6 +11,7 @@ import 'screens/movie_details.dart';
 import 'screens/mood_discovery_page.dart';
 import 'screens/chat_page.dart';
 import 'screens/myratings_page.dart';
+import 'screens/settings_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import for ConsumerStatefulWidget
 import 'providers/auth_provider.dart'; // Import auth provider
 import 'models/movie.dart';
@@ -55,6 +56,13 @@ class AppRouter {
         path: '/my-ratings',
         name: 'my-ratings',
         builder: (context, state) => const MyRatingsPage(),
+      ),
+
+      // Settings Route
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsPage(),
       ),
 
       // Main App Shell with Bottom Navigation

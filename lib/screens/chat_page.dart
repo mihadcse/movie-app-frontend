@@ -128,7 +128,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           centerTitle: false,
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios_new, color: colorScheme.onSurface),
-            onPressed: () => context.pop(), // Navigate back to the previous page
+            onPressed: () => context.go('/profile'), // Navigate back to the previous page
           ),
         title: Row(
           children: [
