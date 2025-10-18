@@ -126,7 +126,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         centerTitle: false,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, color: colorScheme.onSurface),
-          onPressed: () => context.go('/profile'),
+          onPressed: () => context.pop(),
         ),
         title: Row(
           children: [
