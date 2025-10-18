@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
+import '../widgets/gradient_background.dart';
 // import '../providers/theme_provider.dart'; // Theme toggling not used on this screen currently
 
 class RegisterPage extends ConsumerStatefulWidget {
@@ -87,8 +88,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   Widget build(BuildContext context) {
   // Theme provider is available if needed for dynamic styling
 
-    return Scaffold(
-      body: SafeArea(
+    return GradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -136,6 +139,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               Column(
                 children: [
                   ShaderMask(
+                    blendMode: BlendMode.srcIn,
                     shaderCallback: (bounds) => LinearGradient(
                       colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
                     ).createShader(bounds),
@@ -143,7 +147,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       'Join CineMatch',
                       style: Theme.of(context).textTheme.displayMedium
                           ?.copyWith(
-                            color: Theme.of(context).colorScheme.onPrimary,
+                            color: Colors.white,
                             fontWeight: FontWeight.w600,
                           ),
                     ),
@@ -484,6 +488,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             ],
           ),
         ),
+      ),
       ),
     );
   }

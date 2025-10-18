@@ -18,9 +18,7 @@ class TopAppBarWidget extends StatelessWidget {
     
     return AppBar(
       elevation: 0,
-      backgroundColor: isDark 
-          ? Theme.of(context).scaffoldBackgroundColor
-          : Theme.of(context).colorScheme.surface,
+      backgroundColor: Colors.transparent,
       title: Row(
         children: [
           Container(

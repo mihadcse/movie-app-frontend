@@ -6,6 +6,7 @@ import '../providers/auth_provider.dart';
 import '../services/rating_service.dart';
 import '../models/movie.dart';
 import 'movie_details.dart';
+import '../widgets/gradient_background.dart';
 
 class MyRatingsPage extends ConsumerStatefulWidget {
   const MyRatingsPage({super.key});
@@ -109,9 +110,12 @@ class _MyRatingsPageState extends ConsumerState<MyRatingsPage> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
+    return GradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/profile'),
         ),
@@ -183,6 +187,7 @@ class _MyRatingsPageState extends ConsumerState<MyRatingsPage> {
                         },
                       ),
                     ),
+      ),
     );
   }
 

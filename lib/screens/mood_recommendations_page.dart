@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/mood_discovery_service.dart';
+import '../widgets/gradient_background.dart';
 
 class MoodRecommendationsPage extends ConsumerStatefulWidget {
   final String mood;
@@ -58,9 +59,12 @@ class _MoodRecommendationsPageState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
+    return GradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(widget.moodEmoji),
@@ -343,6 +347,7 @@ class _MoodRecommendationsPageState
                         ],
                       ),
                     ),
+    ),
     );
   }
 }

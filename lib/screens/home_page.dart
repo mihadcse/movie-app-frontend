@@ -489,6 +489,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   // Theme can be accessed via Theme.of(context) where needed
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(56),
         child: TopAppBarWidget(

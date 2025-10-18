@@ -329,6 +329,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   // Theme can be accessed via Theme.of(context)
     
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Column(
         children: [
           Padding(

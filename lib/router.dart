@@ -14,6 +14,7 @@ import 'screens/myratings_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import for ConsumerStatefulWidget
 import 'providers/auth_provider.dart'; // Import auth provider
 import 'models/movie.dart';
+import 'widgets/gradient_background.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -294,9 +295,11 @@ class _MainShellState extends ConsumerState<MainShell> {
       _selectedIndex = 3;
     }
 
-    return Scaffold(
-      body: widget.child,
-      bottomNavigationBar: NavigationBar(
+    return GradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: widget.child,
+        bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: _onItemTapped,
         destinations: const [
@@ -354,6 +357,7 @@ class _MainShellState extends ConsumerState<MainShell> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      ),
     );
   }
 }
