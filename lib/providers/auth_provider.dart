@@ -10,6 +10,7 @@ class AuthState {
   final User? user;
   final String? token;
   final String? error;
+  final bool justLoggedIn; // New field
 
   const AuthState({
     this.isAuthenticated = false,
@@ -17,6 +18,7 @@ class AuthState {
     this.user,
     this.token,
     this.error,
+    this.justLoggedIn = false, // Initialize new field
   });
 
   AuthState copyWith({
@@ -25,6 +27,7 @@ class AuthState {
     User? user,
     String? token,
     String? error,
+    bool? justLoggedIn, // Allow copying new field
   }) {
     return AuthState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
@@ -32,6 +35,7 @@ class AuthState {
       user: user ?? this.user,
       token: token ?? this.token,
       error: error ?? this.error,
+      justLoggedIn: justLoggedIn ?? this.justLoggedIn, // Copy new field
     );
   }
 }
@@ -51,19 +55,20 @@ class AuthNotifier extends StateNotifier<AuthState> {
       
       if (token != null && token.isNotEmpty) {
         // Verify token and load user data
-        await _loadUserProfile(token);
+        await _loadUserProfile(token, justLoggedIn: false); // Not a fresh login
       } else {
-        state = state.copyWith(isLoading: false);
+        state = state.copyWith(isLoading: false, justLoggedIn: false);
       }
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
+        justLoggedIn: false,
       );
     }
   }
 
-  Future<void> _loadUserProfile(String token) async {
+  Future<void> _loadUserProfile(String token, {bool justLoggedIn = false}) async {
     try {
       final userData = await ApiService.getUserProfile(token);
       final user = User.fromJson(userData);
@@ -74,6 +79,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         user: user,
         token: token,
         error: null,
+        justLoggedIn: justLoggedIn, // Set based on parameter
       );
     } catch (e) {
       // Token might be invalid, clear it
@@ -81,12 +87,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(
         isLoading: false,
         error: 'Session expired. Please login again.',
+        justLoggedIn: false,
       );
     }
   }
 
   Future<bool> login(String email, String password) async {
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoading: true, error: null, justLoggedIn: false); // Reset before login attempt
     
     try {
       final token = await ApiService.loginUser(email: email, password: password);
@@ -95,14 +102,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('jwt_token', token);
       
-      // Load user profile
-      await _loadUserProfile(token);
+      // Load user profile, indicating a fresh login
+      await _loadUserProfile(token, justLoggedIn: true);
       
       return true;
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
+        justLoggedIn: false,
       );
       return false;
     }
@@ -130,29 +138,31 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
+        justLoggedIn: false,
       );
       return false;
     }
   }
 
   Future<void> logout() async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, justLoggedIn: false); // Reset on logout
     
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('jwt_token');
       
-      state = const AuthState();
+      state = const AuthState(justLoggedIn: false); // Ensure justLoggedIn is false on logout
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
+        justLoggedIn: false,
       );
     }
   }
 
-  void clearError() {
-    state = state.copyWith(error: null);
+  void clearJustLoggedIn() {
+    state = state.copyWith(justLoggedIn: false);
   }
 }
 

@@ -11,6 +11,8 @@ import 'screens/movie_details.dart';
 import 'screens/mood_discovery_page.dart';
 import 'screens/chat_page.dart';
 import 'screens/myratings_page.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import for ConsumerStatefulWidget
+import 'providers/auth_provider.dart'; // Import auth provider
 import 'models/movie.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -192,17 +194,50 @@ class AppRouter {
 }
 
 // Main Shell Widget that provides bottom navigation
-class MainShell extends StatefulWidget {
+class MainShell extends ConsumerStatefulWidget { // Change to ConsumerStatefulWidget
   final Widget child;
 
   const MainShell({super.key, required this.child});
 
   @override
-  State<MainShell> createState() => _MainShellState();
+  ConsumerState<MainShell> createState() => _MainShellState(); // Change to ConsumerState
 }
 
-class _MainShellState extends State<MainShell> {
+class _MainShellState extends ConsumerState<MainShell> {
   int _selectedIndex = 0;
+  bool _messageShown = false; // To track if the message has been shown
+  AuthState? _previousAuthState; // Track previous auth state
+
+  @override
+  void initState() {
+    super.initState();
+    _previousAuthState = ref.read(authProvider); // Initialize with current state
+  }
+
+  void _showMessageFromFab() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "yo! what's the vibe check? 🎬",
+            style: theme.textTheme.bodyLarge?.copyWith(color: colorScheme.onPrimary),
+          ),
+          backgroundColor: colorScheme.primary,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 4),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: const EdgeInsets.only(
+            bottom: 80, // Simplified positioning
+            right: 16,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        ),
+      );
+    });
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -226,7 +261,27 @@ class _MainShellState extends State<MainShell> {
   }
 
   @override
+  void didUpdateWidget(covariant MainShell oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final currentAuthState = ref.read(authProvider);
+
+    // Check if a fresh login just occurred and message hasn't been shown
+    if (currentAuthState.isAuthenticated &&
+        currentAuthState.justLoggedIn &&
+        !_messageShown &&
+        (_previousAuthState == null || !_previousAuthState!.isAuthenticated)) {
+      _showMessageFromFab();
+      ref.read(authProvider.notifier).clearJustLoggedIn();
+      _messageShown = true;
+    }
+    _previousAuthState = currentAuthState; // Update previous state
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // No ref.listen here, just watch the state
+    final authState = ref.watch(authProvider); // Watch auth state to trigger rebuilds
+
     // Determine current index based on location
     final location = GoRouterState.of(context).fullPath;
     if (location?.startsWith('/home') == true) {
