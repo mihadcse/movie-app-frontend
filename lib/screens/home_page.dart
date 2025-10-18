@@ -110,9 +110,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Colors.transparent,
-                          Theme.of(context).colorScheme.background.withOpacity(0.6), // Use theme-specific background color
-                          Theme.of(context).colorScheme.background, // Use theme-specific background color
+                          Colors.black.withOpacity(0.1),
+                          Colors.black.withOpacity(0.5),
+                          Colors.black.withOpacity(0.8),
                         ],
                       ),
                     ),
@@ -126,7 +126,17 @@ class _HomePageState extends ConsumerState<HomePage> {
                       children: [
                         Text(
                           movie.title,
-                          style: Theme.of(context).textTheme.displaySmall,
+                          style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black.withOpacity(0.7),
+                                offset: const Offset(0, 2),
+                                blurRadius: 8,
+                              ),
+                            ],
+                          ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -137,17 +147,25 @@ class _HomePageState extends ConsumerState<HomePage> {
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
-                                  vertical: 4,
+                                  vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(24),
+                                  color: Colors.white.withOpacity(0.9),
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
                                 child: Text(
                                   movie.year.toString(),
                                   style: TextStyle(
                                     color: Theme.of(context).colorScheme.primary,
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
                                   ),
                                 ),
                               ),
@@ -157,17 +175,25 @@ class _HomePageState extends ConsumerState<HomePage> {
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
-                                  vertical: 4,
+                                  vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(24),
+                                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.95),
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
                                 child: Text(
                                   movie.genre!,
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.secondary,
-                                    fontWeight: FontWeight.w500,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
                                   ),
                                 ),
                               ),
@@ -178,15 +204,29 @@ class _HomePageState extends ConsumerState<HomePage> {
                         Row(
                           children: [
                             Expanded(
-                              child: ElevatedButton(
+                              child: FilledButton.icon(
                                 onPressed: () => _navigateToDetails(movie),
-                                child: const Text('View Details'),
+                                icon: const Icon(Icons.play_arrow, size: 20),
+                                label: const Text('Watch Now'),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: Theme.of(context).colorScheme.primary,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  elevation: 4,
+                                  shadowColor: Colors.black.withOpacity(0.5),
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
-                            OutlinedButton(
+                            FilledButton(
                               onPressed: () {},
-                              child: const Icon(Icons.bookmark_outline),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Colors.white.withOpacity(0.2),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.all(12),
+                                minimumSize: const Size(48, 48),
+                              ),
+                              child: const Icon(Icons.bookmark_outline, size: 20),
                             ),
                           ],
                         ),
@@ -235,8 +275,8 @@ class _HomePageState extends ConsumerState<HomePage> {
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.6,
-        crossAxisSpacing: 16,
+        childAspectRatio: 0.65,
+        crossAxisSpacing: 12,
         mainAxisSpacing: 16,
       ),
       itemCount: movies.length + (hasMoreData ? 1 : 0),
@@ -253,7 +293,12 @@ class _HomePageState extends ConsumerState<HomePage> {
         final imageUrl = MovieApiService.getMoviePosterUrl(movie);
 
         return Card(
+          elevation: 3,
+          shadowColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
           clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: InkWell(
             onTap: () => _navigateToDetails(movie),
             child: Column(
@@ -261,92 +306,168 @@ class _HomePageState extends ConsumerState<HomePage> {
               children: [
                 Expanded(
                   flex: 3,
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceVariant, // Use theme-specific muted color
-                    ),
-                    child: Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Theme.of(context).colorScheme.surfaceVariant, // Use theme-specific muted color
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.movie,
-                                size: 32,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant, // Use theme-specific mutedForeground color
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surfaceVariant,
+                        ),
+                        child: Image.network(
+                          imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Theme.of(context).colorScheme.surfaceVariant,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.movie_outlined,
+                                    size: 48,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'No Image',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'No Image',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant, // Use theme-specific mutedForeground color
-                                ),
-                              ),
-                            ],
+                            );
+                          },
+                        ),
+                      ),
+                      // Gradient overlay for better text visibility
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          height: 60,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withOpacity(0.7),
+                              ],
+                            ),
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      ),
+                      // Rating badge
+                      if (movie.rating > 0)
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.7),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.star,
+                                  size: 14,
+                                  color: Colors.amber[400],
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  movie.rating.toStringAsFixed(1),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
                 Expanded(
                   flex: 1,
                   child: Padding(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          movie.title,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (movie.year != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            movie.year.toString(),
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant, // Use theme-specific mutedForeground color
-                              fontSize: 12,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              movie.title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: Theme.of(context).colorScheme.onSurface,
+                                height: 1.2,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                        ],
-                        if (movie.genres != null && movie.genres!.isNotEmpty) ...[
-                          const SizedBox(height: 4),
+                            if (movie.year != null) ...[
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.calendar_today,
+                                    size: 12,
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    movie.year.toString(),
+                                    style: TextStyle(
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ],
+                        ),
+                        if (movie.genres != null && movie.genres!.isNotEmpty)
                           Wrap(
                             spacing: 4,
+                            runSpacing: 4,
                             children: movie.genres!.take(2).map((genre) {
                               return Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
+                                  horizontal: 8,
+                                  vertical: 3,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
+                                  color: Theme.of(context).colorScheme.primaryContainer,
+                                  borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
                                   genre,
                                   style: TextStyle(
-                                    color: Theme.of(context).colorScheme.primary,
-                                    fontSize: 10,
+                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               );
                             }).toList(),
                           ),
-                        ],
                       ],
                     ),
                   ),
@@ -368,7 +489,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   // Theme can be accessed via Theme.of(context) where needed
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(56),
         child: TopAppBarWidget(
@@ -441,33 +561,77 @@ class _HomePageState extends ConsumerState<HomePage> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'All Movies',
-                                        style: Theme.of(context).textTheme.headlineMedium,
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            '${movies.length} movies available',
-                                            style: TextStyle(
-                                              color: Theme.of(context).colorScheme.onSurfaceVariant, // Use theme-specific mutedForeground color
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(8),
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context).colorScheme.primaryContainer,
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              child: Icon(
+                                                Icons.movie_filter_outlined,
+                                                size: 20,
+                                                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                              ),
                                             ),
+                                            const SizedBox(width: 12),
+                                            Text(
+                                              'All Movies',
+                                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 44),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(
+                                                  horizontal: 8,
+                                                  vertical: 4,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: Theme.of(context).colorScheme.secondaryContainer,
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                child: Text(
+                                                  '${movies.length} movies',
+                                                  style: TextStyle(
+                                                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 13,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
-                                    ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  IconButton(
+                                  FilledButton.icon(
                                     onPressed: _refreshMovies,
-                                    icon: const Icon(Icons.refresh),
-                                    tooltip: 'Refresh',
+                                    icon: const Icon(Icons.refresh, size: 18),
+                                    label: const Text('Refresh'),
+                                    style: FilledButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 10,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
+                            const SizedBox(height: 8),
                           ],
                         ),
                       ),

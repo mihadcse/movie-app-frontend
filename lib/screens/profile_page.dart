@@ -228,43 +228,43 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         const SizedBox(height: 24),
 
         // Stats
-        Row(
-          children: _userStats.map((stat) {
-            return Expanded(
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      ShaderMask(
-                        shaderCallback: (bounds) => LinearGradient(
-                          colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
-                        ).createShader(bounds),
-                        child: Text(
-                          stat['value'],
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w500,
-                            color: Theme.of(context).colorScheme.onPrimary,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        stat['label'],
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
+        // Row(
+        //   children: _userStats.map((stat) {
+        //     return Expanded(
+        //       child: Card(
+        //         child: Padding(
+        //           padding: const EdgeInsets.all(16),
+        //           child: Column(
+        //             children: [
+        //               ShaderMask(
+        //                 shaderCallback: (bounds) => LinearGradient(
+        //                   colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
+        //                 ).createShader(bounds),
+        //                 child: Text(
+        //                   stat['value'],
+        //                   style: TextStyle(
+        //                     fontSize: 24,
+        //                     fontWeight: FontWeight.w500,
+        //                     color: Theme.of(context).colorScheme.onPrimary,
+        //                   ),
+        //                 ),
+        //               ),
+        //               const SizedBox(height: 4),
+        //               Text(
+        //                 stat['label'],
+        //                 style: TextStyle(
+        //                   fontSize: 12,
+        //                   color: Theme.of(context).colorScheme.onSurfaceVariant,
+        //                 ),
+        //                 textAlign: TextAlign.center,
+        //               ),
+        //             ],
+        //           ),
+        //         ),
+        //       ),
+        //     );
+        //   }).toList(),
+        // ),
         const SizedBox(height: 24),
 
         // Recent Ratings
