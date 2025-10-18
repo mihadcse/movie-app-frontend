@@ -7,6 +7,7 @@ import '../services/movie_api_service.dart';
 import '../widgets/top_app_bar.dart';
 import '../screens/movie_details.dart';
 import '../providers/movie_provider.dart';
+import '../widgets/save_to_selection_sheet.dart'; // Import the new widget
 // import '../providers/theme_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -219,7 +220,25 @@ class _HomePageState extends ConsumerState<HomePage> {
                             ),
                             const SizedBox(width: 12),
                             FilledButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                final selectedOption = await showModalBottomSheet<String?>(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                                  ),
+                                  builder: (ctx) => const SaveToSelectionSheet(),
+                                );
+                                // TODO: Handle selectedOption (favorites or watch_later) when functionality is requested
+                                if (selectedOption != null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Selected: $selectedOption'),
+                                      backgroundColor: Theme.of(context).colorScheme.primary,
+                                    ),
+                                  );
+                                }
+                              },
                               style: FilledButton.styleFrom(
                                 backgroundColor: Colors.white.withOpacity(0.2),
                                 foregroundColor: Colors.white,

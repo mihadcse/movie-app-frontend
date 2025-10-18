@@ -4,6 +4,7 @@ import '../models/movie.dart';
 import '../providers/auth_provider.dart';
 import '../services/rating_service.dart';
 import '../widgets/gradient_background.dart';
+import '../widgets/save_to_selection_sheet.dart'; // Import the new widget
 
 class MovieDetailsPage extends ConsumerWidget {
   final Movie movie;
@@ -46,12 +47,7 @@ class MovieDetailsPage extends ConsumerWidget {
                 ],
               ),
             ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.share),
-                onPressed: () {},
-              ),
-            ],
+            actions: [],
           ),
           SliverToBoxAdapter(
             child: Padding(
@@ -147,7 +143,25 @@ class MovieDetailsPage extends ConsumerWidget {
                     children: [
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () {},
+                          onPressed: () async {
+                            final selectedOption = await showModalBottomSheet<String?>(
+                              context: context,
+                              isScrollControlled: true,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                              ),
+                              builder: (ctx) => const SaveToSelectionSheet(),
+                            );
+                            // TODO: Handle selectedOption (favorites or watch_later) when functionality is requested
+                            if (selectedOption != null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Selected: $selectedOption'),
+                                  backgroundColor: Theme.of(context).colorScheme.primary,
+                                ),
+                              );
+                            }
+                          },
                           icon: const Icon(Icons.add),
                           label: const Text('Watchlist'),
                         ),
