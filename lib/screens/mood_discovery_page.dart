@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/movie.dart';
-import '../widgets/movie_card.dart';
-import '../screens/movie_details.dart';
-// import '../providers/theme_provider.dart';
+import 'mood_recommendations_page.dart';
 
-class MoodDiscoveryPage extends ConsumerStatefulWidget { // Change to ConsumerStatefulWidget
+class MoodDiscoveryPage extends ConsumerStatefulWidget {
   const MoodDiscoveryPage({super.key});
 
   @override
-  ConsumerState<MoodDiscoveryPage> createState() => _MoodDiscoveryPageState(); // Change to ConsumerState
+  ConsumerState<MoodDiscoveryPage> createState() => _MoodDiscoveryPageState();
 }
 
-class _MoodDiscoveryPageState extends ConsumerState<MoodDiscoveryPage> { // Change to ConsumerState
-  String? _selectedMood;
+class _MoodDiscoveryPageState extends ConsumerState<MoodDiscoveryPage> {
 
   final List<Mood> _moods = [
     Mood(
@@ -65,87 +62,6 @@ class _MoodDiscoveryPageState extends ConsumerState<MoodDiscoveryPage> { // Chan
       colors: [const Color(0xFF9C27B0), const Color(0xFFEC407A)],
     ),
   ];
-
-  final Map<String, List<Movie>> _moodMovies = {
-    'happy': [
-      Movie(
-        id: '1',
-        title: 'Comedy Central',
-        rating: 7.8,
-        image: 'https://images.unsplash.com/photo-1758525862263-af89b090fb56?w=400',
-        genre: 'Comedy',
-      ),
-      Movie(
-        id: '2',
-        title: 'Laugh Out Loud',
-        rating: 7.6,
-        image: 'https://images.unsplash.com/photo-1758525862263-af89b090fb56?w=400',
-        genre: 'Comedy',
-      ),
-    ],
-    'romantic': [
-      Movie(
-        id: '3',
-        title: 'Love in Paris',
-        rating: 8.3,
-        image: 'https://images.unsplash.com/photo-1627964464837-6328f5931576?w=400',
-        genre: 'Romance',
-      ),
-      Movie(
-        id: '4',
-        title: 'Eternal Love',
-        rating: 8.2,
-        image: 'https://images.unsplash.com/photo-1627964464837-6328f5931576?w=400',
-        genre: 'Romance',
-      ),
-    ],
-    'thrilling': [
-      Movie(
-        id: '5',
-        title: 'Dark Memories',
-        rating: 9.1,
-        image: 'https://images.unsplash.com/photo-1558877025-102791db823f?w=400',
-        genre: 'Thriller',
-      ),
-      Movie(
-        id: '6',
-        title: 'The Night Shift',
-        rating: 8.5,
-        image: 'https://images.unsplash.com/photo-1753944847480-92f369a5f00e?w=400',
-        genre: 'Thriller',
-      ),
-    ],
-    'adventurous': [
-      Movie(
-        id: '7',
-        title: 'Quantum Nexus',
-        rating: 8.7,
-        image: 'https://images.unsplash.com/photo-1644772715611-0d1f77c10e36?w=400',
-        genre: 'Sci-Fi',
-      ),
-      Movie(
-        id: '8',
-        title: 'Cosmic Journey',
-        rating: 8.9,
-        image: 'https://images.unsplash.com/photo-1644772715611-0d1f77c10e36?w=400',
-        genre: 'Sci-Fi',
-      ),
-    ],
-  };
-
-  List<Movie> get _currentMovies {
-    if (_selectedMood == null) return [];
-    return _moodMovies[_selectedMood] ?? [];
-  }
-
-  void _navigateToDetails(Movie movie) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MovieDetailsPage(movie: movie),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -215,20 +131,26 @@ class _MoodDiscoveryPageState extends ConsumerState<MoodDiscoveryPage> { // Chan
           itemCount: _moods.length,
           itemBuilder: (context, index) {
             final mood = _moods[index];
-            final isSelected = _selectedMood == mood.id;
 
             return InkWell(
               onTap: () {
-                setState(() {
-                  _selectedMood = mood.id;
-                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MoodRecommendationsPage(
+                      mood: mood.id,
+                      moodLabel: mood.label,
+                      moodEmoji: mood.emoji,
+                    ),
+                  ),
+                );
               },
               borderRadius: BorderRadius.circular(16),
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: isSelected ? Theme.of(context).colorScheme.primary : Colors.transparent,
+                    color: Colors.transparent,
                     width: 2,
                   ),
                 ),
@@ -262,9 +184,7 @@ class _MoodDiscoveryPageState extends ConsumerState<MoodDiscoveryPage> { // Chan
                           Text(
                             mood.label,
                             style: TextStyle(
-                              color: isSelected
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context).colorScheme.onSurface,
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -277,61 +197,6 @@ class _MoodDiscoveryPageState extends ConsumerState<MoodDiscoveryPage> { // Chan
             );
           },
         ),
-        const SizedBox(height: 32),
-
-        // Movie Recommendations
-        if (_selectedMood != null && _currentMovies.isNotEmpty) ...[
-          RichText(
-            text: TextSpan(
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-              children: [
-                const TextSpan(text: 'Perfect for your '),
-                TextSpan(
-                  text: _moods
-                      .firstWhere((m) => m.id == _selectedMood)
-                      .label,
-                  style: TextStyle(color: Theme.of(context).colorScheme.primary),
-                ),
-                const TextSpan(text: ' mood'),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.6,
-            ),
-            itemCount: _currentMovies.length,
-            itemBuilder: (context, index) {
-              return MovieCard(
-                movie: _currentMovies[index],
-                width: double.infinity,
-                onTap: () => _navigateToDetails(_currentMovies[index]),
-              );
-            },
-          ),
-        ] else if (_selectedMood == null)
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Text(
-                'Select a mood above to discover movies that match your vibe',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
       ],
     );
   }
