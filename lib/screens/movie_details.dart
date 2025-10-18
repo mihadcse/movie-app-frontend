@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/movie.dart';
 import '../providers/auth_provider.dart';
 import '../services/rating_service.dart';
+import '../widgets/gradient_background.dart';
 
 class MovieDetailsPage extends ConsumerWidget {
   final Movie movie;
@@ -13,8 +14,10 @@ class MovieDetailsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final auth = ref.watch(authProvider);
 
-    return Scaffold(
-      body: CustomScrollView(
+    return GradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 400,
@@ -179,6 +182,7 @@ class MovieDetailsPage extends ConsumerWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

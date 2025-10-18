@@ -12,6 +12,7 @@ import 'screens/mood_discovery_page.dart';
 import 'screens/chat_page.dart';
 import 'screens/myratings_page.dart';
 import 'models/movie.dart';
+import 'widgets/gradient_background.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -239,9 +240,11 @@ class _MainShellState extends State<MainShell> {
       _selectedIndex = 3;
     }
 
-    return Scaffold(
-      body: widget.child,
-      bottomNavigationBar: NavigationBar(
+    return GradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: widget.child,
+        bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: _onItemTapped,
         destinations: const [
@@ -299,6 +302,7 @@ class _MainShellState extends State<MainShell> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      ),
     );
   }
 }

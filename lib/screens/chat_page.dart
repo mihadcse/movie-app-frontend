@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../services/chat_service.dart';
+import '../widgets/gradient_background.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -116,17 +117,18 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     
-    return Scaffold(
-      backgroundColor: colorScheme.surface,
-      extendBodyBehindAppBar: false,
-      appBar: AppBar(
-        backgroundColor: colorScheme.surface,
-        foregroundColor: colorScheme.onSurface,
-        elevation: 0,
-        centerTitle: false,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: colorScheme.onSurface),
-          onPressed: () => context.pop(),
+    return GradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: false,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          foregroundColor: colorScheme.onSurface,
+          elevation: 0,
+          centerTitle: false,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios_new, color: colorScheme.onSurface),
+          onPressed: () => context.go('/profile'),
         ),
         title: Row(
           children: [
@@ -208,18 +210,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           Expanded(
             child: _messages.isEmpty
                 ? _buildEmptyState(colorScheme, theme)
-                : Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          colorScheme.surface,
-                          colorScheme.surfaceContainerLowest,
-                        ],
-                      ),
-                    ),
-                    child: ListView.builder(
+                : ListView.builder(
                       controller: _scrollController,
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       itemCount: _messages.length + (_isLoading ? 1 : 0),
@@ -232,29 +223,18 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                         return _buildMessageBubble(message, colorScheme, theme);
                       },
                     ),
-                  ),
           ),
           
           // Input Area
           _buildInputArea(colorScheme, theme),
         ],
       ),
+      ),
     );
   }
 
   Widget _buildEmptyState(ColorScheme colorScheme, ThemeData theme) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            colorScheme.surface,
-            colorScheme.surfaceContainerLowest,
-          ],
-        ),
-      ),
-      child: Center(
+    return Center(
         child: Container(
           padding: const EdgeInsets.all(32),
           child: Column(
@@ -319,7 +299,6 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
             ],
           ),
         ),
-      ),
     );
   }
 
